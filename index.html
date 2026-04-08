@@ -1,215 +1,301 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ma vie</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fintech 3D Dashboard - Smart Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0c;
+            color: #e2e8f0;
+        }
 
-<style>
-body {margin:0;font-family:Arial;background:#1e1e2f;color:white;}
-.container {display:flex;height:100vh;}
-.sidebar {width:220px;background:#2c2c3e;padding:10px;}
-.menu-item {padding:12px;margin:5px 0;background:#3a3a50;border-radius:10px;cursor:pointer;}
-.menu-item:hover {background:#505070;}
-.main {flex:1;padding:20px;}
-.card {background:#2c2c3e;padding:20px;border-radius:15px;margin-bottom:15px;}
-.green {color:#00ff99;font-size:22px;}
-input {width:100%;padding:8px;margin-top:5px;border-radius:8px;border:none;}
-button {padding:10px;border:none;border-radius:10px;background:#00ff99;cursor:pointer;margin-top:10px;}
+        .glass {
+            background: rgba(23, 23, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
 
-#calendar {display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
-.day {padding:10px;background:#444;text-align:center;border-radius:8px;cursor:pointer;}
-.highlight {background:orange;color:black;font-weight:bold;}
-.selected {background:#00ff99;color:black;}
+        .neo-input {
+            background: rgba(10, 10, 12, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
 
-/* LOCK SCREEN */
-#lockScreen {
-position:fixed;top:0;left:0;width:100%;height:100%;
-background:#000;display:flex;justify-content:center;align-items:center;flex-direction:column;
-z-index:9999;
-}
-</style>
+        .neo-input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+            outline: none;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        /* Scrollbar thin */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    </style>
 </head>
+<body x-data="appData()" x-init="init()">
 
-<body>
+    <template x-if="!isLoggedIn">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black">
+            <div class="glass p-8 rounded-3xl w-80 text-center">
+                <div class="mb-6 flex justify-center">
+                    <div class="p-4 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-500/50">
+                        <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold mb-6">Fintech Access</h2>
+                <input type="email" x-model="loginForm.email" placeholder="Email" class="neo-input w-full p-3 rounded-xl mb-4">
+                <input type="password" x-model="loginForm.password" placeholder="Mot de passe" class="neo-input w-full p-3 rounded-xl mb-6">
+                <button @click="login()" class="w-full bg-indigo-600 hover:bg-indigo-500 p-3 rounded-xl font-semibold transition">Se connecter</button>
+            </div>
+        </div>
+    </template>
 
-<!-- 🔐 LOCK -->
-<div id="lockScreen">
-<h2>🔐 Mot de passe</h2>
-<input type="password" id="passwordInput" placeholder="Entrer mot de passe">
-<button onclick="unlock()">Entrer</button>
-</div>
+    <div class="flex h-screen overflow-hidden" x-show="isLoggedIn">
+        
+        <aside class="w-64 glass m-4 rounded-3xl flex flex-col p-6 hidden md:flex">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
+                    <i data-lucide="zap" class="text-white w-6 h-6"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">V-FINANCE</span>
+            </div>
 
-<div class="container">
+            <nav class="space-y-2 flex-1">
+                <template x-for="menu in menus" :key="menu.id">
+                    <button @click="currentTab = menu.id" 
+                            :class="currentTab === menu.id ? 'bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500' : 'text-gray-400'"
+                            class="sidebar-item w-full flex items-center gap-4 p-3 rounded-xl transition-all duration-200">
+                        <i :data-lucide="menu.icon" class="w-5 h-5"></i>
+                        <span class="font-medium" x-text="menu.name"></span>
+                    </button>
+                </template>
+            </nav>
 
-<div class="sidebar">
-<h2>Ma vie</h2>
-<div class="menu-item" onclick="show('home')">Accueil</div>
-<div class="menu-item" onclick="show('jirama')">JIRAMA</div>
-<div class="menu-item" onclick="show('portefeuille')">Portefeuille</div>
-</div>
+            <button @click="isLoggedIn = false" class="text-red-400 flex items-center gap-4 p-3 hover:bg-red-500/10 rounded-xl transition">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+                <span>Déconnexion</span>
+            </button>
+        </aside>
 
-<div class="main">
+        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+            
+            <header class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-bold" x-text="menus.find(m => m.id === currentTab).name"></h1>
+                    <p class="text-gray-500">Gérez vos finances avec précision 3D</p>
+                </div>
+                <div class="glass px-4 py-2 rounded-2xl flex items-center gap-3">
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500">Solde Total</p>
+                        <p class="font-bold text-green-400 glow-text" x-text="formatCurrency(calculateWallet())"></p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                    </div>
+                </div>
+            </header>
 
-<div id="home" class="section">
-<div class="card">
-<h3>Gain Journalier</h3>
-<input type="number" id="gainJour">
-</div>
+            <section x-show="currentTab === 'jirama'" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass p-6 rounded-3xl">
+                        <h3 class="flex items-center gap-2 mb-4 text-yellow-400">
+                            <i data-lucide="zap" class="w-5 h-5"></i> Consommation (kWh)
+                        </h3>
+                        <div class="grid grid-cols-7 gap-2">
+                            <template x-for="day in 31" :key="day">
+                                <div :class="day >= 25 && day <= 30 ? 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'border-gray-800'"
+                                     class="border rounded-lg p-1 text-center bg-black/20">
+                                    <span class="text-[10px] text-gray-500" x-text="day"></span>
+                                    <input type="number" x-model="data.jirama[day]" class="w-full bg-transparent text-center text-xs focus:outline-none">
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="glass p-6 rounded-3xl flex flex-col justify-center items-center text-center">
+                        <div class="p-4 bg-red-500/20 rounded-full mb-4 animate-pulse" x-show="checkJiramaAlert()">
+                            <i data-lucide="alert-triangle" class="text-red-500 w-10 h-10"></i>
+                        </div>
+                        <h4 class="text-xl font-bold">Alerte Intelligente</h4>
+                        <p class="text-gray-400 mt-2" x-text="checkJiramaAlert() ? 'Attention : Hausse de > 2.5kWh détectée !' : 'Consommation stable.'"></p>
+                    </div>
+                </div>
+            </section>
 
-<div class="card">
-<h3>Gain Mensuel</h3>
-<p class="green" id="gainMois">0 Ar</p>
-</div>
-</div>
+            <section x-show="currentTab === 'ecolage'" class="glass p-8 rounded-3xl">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <template x-for="(status, month) in data.ecolage" :key="month">
+                        <div class="neo-input p-4 rounded-2xl flex flex-col items-center gap-3">
+                            <span class="capitalize font-semibold" x-text="month"></span>
+                            <button @click="data.ecolage[month] = !data.ecolage[month]"
+                                    :class="status ? 'bg-green-500' : 'bg-red-500'"
+                                    class="px-4 py-1 rounded-full text-xs font-bold transition-all">
+                                <span x-text="status ? 'PAYÉ' : 'IMPAYÉ'"></span>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </section>
 
-<div id="jirama" class="section" style="display:none">
-<div class="card">
-<h3>JIRAMA (par jour)</h3>
-<input type="date" id="dateJirama">
-<input type="number" id="jiramaInput" placeholder="kWh">
-<button onclick="saveJirama()">Enregistrer</button>
-<p id="jiramaAlert"></p>
-<div id="calendar"></div>
-</div>
-</div>
+            <section x-show="['shopping', 'adidy', 'medical'].includes(currentTab)" class="glass p-8 rounded-3xl max-w-2xl mx-auto">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i :data-lucide="menus.find(m => m.id === currentTab).icon" class="w-6 h-6"></i>
+                    Saisie des dépenses mensuelles
+                </h3>
+                <div class="space-y-4">
+                    <template x-for="month in months" :key="month">
+                        <div class="flex items-center justify-between p-3 neo-input rounded-xl">
+                            <span class="capitalize" x-text="month"></span>
+                            <input type="number" x-model="data[currentTab][month]" class="bg-transparent text-right focus:outline-none border-b border-gray-700 w-32" placeholder="0.00">
+                        </div>
+                    </template>
+                </div>
+            </section>
 
-<div id="portefeuille" class="section" style="display:none">
-<div class="card">
-<h3>Salaire</h3>
-<input type="number" id="salaireInput">
-</div>
+            <section x-show="currentTab === 'wallet'" class="space-y-6">
+                <div class="glass p-8 rounded-3xl bg-gradient-to-br from-indigo-900/20 to-transparent border-indigo-500/30">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div class="w-full md:w-1/2">
+                            <label class="text-gray-400 text-sm mb-2 block">Salaire Mensuel Brut</label>
+                            <input type="number" x-model="data.salary" class="w-full text-4xl font-bold bg-transparent border-b-2 border-indigo-500 focus:outline-none glow-text text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 w-full md:w-1/2">
+                            <div class="p-4 bg-black/40 rounded-2xl border border-white/5">
+                                <p class="text-xs text-gray-500">Dépenses Fixes</p>
+                                <p class="text-xl font-bold text-red-400" x-text="formatCurrency(calculateTotalExpenses())"></p>
+                            </div>
+                            <div class="p-4 bg-indigo-600/20 rounded-2xl border border-indigo-500/20">
+                                <p class="text-xs text-indigo-300">Net Disponible</p>
+                                <p class="text-xl font-bold text-indigo-400" x-text="formatCurrency(calculateWallet())"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-<div class="card">
-<h3>Dépenses</h3>
-<input type="number" id="depenseInput" placeholder="Total dépenses">
-</div>
+            <section x-show="currentTab === 'savings'" class="text-center py-10">
+                <div class="inline-block glass p-10 rounded-full mb-8 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
+                    <i data-lucide="piggy-bank" class="w-20 h-20 text-green-400 mx-auto mb-4"></i>
+                    <h2 class="text-5xl font-bold text-white glow-text" x-text="formatCurrency(calculateSavings())"></h2>
+                    <p class="text-green-400 font-semibold mt-2">Épargne Totale Générée</p>
+                </div>
+                <div class="max-w-md mx-auto neo-input p-6 rounded-3xl">
+                    <p class="text-sm text-gray-400 italic">"L'épargne est calculée en additionnant le solde de votre portefeuille et vos gains journaliers."</p>
+                </div>
+            </section>
 
-<div class="card">
-<button onclick="calculer()">Calculer</button>
-<p class="green" id="resultat"></p>
-<p id="alerteDepense"></p>
-</div>
-</div>
+            <section x-show="currentTab === 'goals'" class="glass p-8 rounded-3xl">
+                <h3 class="text-xl font-bold mb-6">Suivi des Gains Journaliers</h3>
+                <div class="grid grid-cols-4 md:grid-cols-7 gap-4">
+                    <template x-for="day in 31" :key="day">
+                        <div class="neo-input p-3 rounded-2xl">
+                            <span class="text-[10px] text-gray-500" x-text="'Jour ' + day"></span>
+                            <input type="number" x-model="data.dailyGains[day]" class="w-full bg-transparent text-sm font-bold focus:outline-none" placeholder="0">
+                        </div>
+                    </template>
+                </div>
+            </section>
 
-</div>
-</div>
+        </main>
+    </div>
 
-<script>
+    <script>
+        function appData() {
+            return {
+                isLoggedIn: false,
+                currentTab: 'wallet',
+                loginForm: { email: 'admin@fintech.com', password: '123' },
+                months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+                menus: [
+                    { id: 'wallet', name: 'Portefeuille', icon: 'wallet' },
+                    { id: 'jirama', name: 'Jirama', icon: 'zap' },
+                    { id: 'ecolage', name: 'Écolage', icon: 'graduation-cap' },
+                    { id: 'shopping', name: 'Shopping', icon: 'shopping-cart' },
+                    { id: 'adidy', name: 'ADIDY', icon: 'gift' },
+                    { id: 'medical', name: 'Médical', icon: 'heart-pulse' },
+                    { id: 'savings', name: 'Épargne', icon: 'landmark' },
+                    { id: 'goals', name: 'Objectifs', icon: 'target' },
+                ],
+                data: {
+                    salary: 2500000,
+                    jirama: {},
+                    ecolage: { janvier: true, février: false, mars: false },
+                    shopping: {},
+                    adidy: {},
+                    medical: {},
+                    dailyGains: {}
+                },
 
-/* 🔐 PASSWORD */
-let savedPass = localStorage.getItem("password");
+                init() {
+                    const saved = localStorage.getItem('fintech_data');
+                    if (saved) this.data = JSON.parse(saved);
+                    
+                    // Watch for changes and save
+                    this.$watch('data', (val) => {
+                        localStorage.setItem('fintech_data', JSON.stringify(val));
+                    }, { deep: true });
 
-if(!savedPass){
-localStorage.setItem("password","1234"); // mot de passe par défaut
-}
+                    lucide.createIcons();
+                },
 
-function unlock(){
-let input = document.getElementById("passwordInput").value;
-if(input === localStorage.getItem("password")){
-document.getElementById("lockScreen").style.display="none";
-}else{
-alert("Mot de passe incorrect");
-}
-}
+                login() {
+                    // Simple logic for demo
+                    if (this.loginForm.email && this.loginForm.password) {
+                        this.isLoggedIn = true;
+                        setTimeout(() => lucide.createIcons(), 100);
+                    }
+                },
 
-/* NAV */
-function show(section){
-document.querySelectorAll('.section').forEach(s=>s.style.display="none");
-document.getElementById(section).style.display="block";
-}
+                calculateTotalExpenses() {
+                    let total = 0;
+                    const currentMonth = 'janvier'; // Dynamique en prod
+                    total += parseFloat(this.data.shopping[currentMonth] || 0);
+                    total += parseFloat(this.data.adidy[currentMonth] || 0);
+                    total += parseFloat(this.data.medical[currentMonth] || 0);
+                    // Jirama simulé (ex: 500 Ar par kWh)
+                    let kwh = Object.values(this.data.jirama).reduce((a, b) => parseFloat(a||0) + parseFloat(b||0), 0);
+                    total += (kwh * 500);
+                    return total;
+                },
 
-/* 📅 CALENDAR */
-function generateCalendar(){
-let cal=document.getElementById("calendar");
-cal.innerHTML="";
-for(let i=1;i<=30;i++){
-let d=document.createElement("div");
-d.classList.add("day");
-d.innerText=i;
+                calculateWallet() {
+                    return this.data.salary - this.calculateTotalExpenses();
+                },
 
-if(i>=25 && i<=30) d.classList.add("highlight");
+                calculateSavings() {
+                    let gains = Object.values(this.data.dailyGains).reduce((a, b) => parseFloat(a||0) + parseFloat(b||0), 0);
+                    return this.calculateWallet() + gains;
+                },
 
-d.onclick=()=>selectDay(i,d);
+                checkJiramaAlert() {
+                    const values = Object.values(this.data.jirama);
+                    for(let i=1; i < values.length; i++) {
+                        if(Math.abs(values[i] - values[i-1]) > 2.5) return true;
+                    }
+                    return false;
+                },
 
-cal.appendChild(d);
-}}
-generateCalendar();
-
-function selectDay(day,el){
-document.querySelectorAll(".day").forEach(d=>d.classList.remove("selected"));
-el.classList.add("selected");
-}
-
-/* 💾 SAVE GLOBAL */
-function saveData(){
-localStorage.setItem("data", JSON.stringify({
-gainJour: gainJour.value,
-salaire: salaireInput.value,
-depense: depenseInput.value
-}));
-}
-
-/* LOAD */
-function loadData(){
-let data=JSON.parse(localStorage.getItem("data")||"{}");
-gainJour.value=data.gainJour||"";
-salaireInput.value=data.salaire||"";
-depenseInput.value=data.depense||"";
-updateGain();
-}
-loadData();
-
-/* AUTO SAVE */
-document.querySelectorAll("input").forEach(i=>{
-i.addEventListener("input", saveData);
-});
-
-/* 📅 JIRAMA PAR JOUR */
-function saveJirama(){
-let date=document.getElementById("dateJirama").value;
-let val=document.getElementById("jiramaInput").value;
-
-let jiramaData=JSON.parse(localStorage.getItem("jiramaData")||"{}");
-
-if(jiramaData[date]){
-if(val - jiramaData[date] > 2.5){
-jiramaAlert.innerText="⚠️ Consommation élevée !";
-}else{
-jiramaAlert.innerText="";
-}
-}
-
-jiramaData[date]=val;
-localStorage.setItem("jiramaData", JSON.stringify(jiramaData));
-}
-
-/* 💰 CALCUL + ALERTE */
-function calculer(){
-let salaire=+salaireInput.value||0;
-let depense=+depenseInput.value||0;
-let gain=+gainJour.value||0;
-
-let portefeuille=salaire-depense;
-let epargne=portefeuille+gain;
-
-resultat.innerText="Portefeuille: "+portefeuille+" Ar | Épargne: "+epargne+" Ar";
-
-/* ⚠️ ALERTE */
-if(depense > salaire*0.7){
-alerteDepense.innerText="⚠️ Tu dépenses trop !";
-}else{
-alerteDepense.innerText="";
-}
-}
-
-/* Gain */
-function updateGain(){
-gainMois.innerText=(gainJour.value*30||0)+" Ar";
-}
-gainJour.addEventListener("input", updateGain);
-
-</script>
-
+                formatCurrency(val) {
+                    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MGA' }).format(val);
+                }
+            }
+        }
+    </script>
 </body>
 </html>
