@@ -3,296 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fintech 3D Dashboard - Smart Wallet</title>
+    <title>Ma Vie - 3D Fintech App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif;
-            background: #0a0a0c;
+            font-family: 'Poppins', sans-serif;
+            background: #050505;
             color: #e2e8f0;
+            overflow: hidden;
         }
 
         .glass {
-            background: rgba(23, 23, 26, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            background: rgba(20, 20, 25, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .neo-input {
-            background: rgba(10, 10, 12, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .neo-input:focus {
             border-color: #6366f1;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
             outline: none;
         }
 
-        .glow-text {
-            text-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+        .glow-releve {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
         }
 
-        .sidebar-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-            transform: translateX(5px);
+        .sidebar-item { transition: all 0.2s; }
+        .sidebar-item.active {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, transparent 100%);
+            border-left: 4px solid #6366f1;
+            color: #fff;
         }
 
-        /* Scrollbar thin */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        /* Animation de notification */
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .alert-active { animation: pulse-red 2s infinite; }
     </style>
 </head>
-<body x-data="appData()" x-init="init()">
+<body x-data="app()" x-init="init()">
 
     <template x-if="!isLoggedIn">
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-black">
-            <div class="glass p-8 rounded-3xl w-80 text-center">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#050505] p-4">
+            <div class="glass p-8 rounded-[2rem] w-full max-w-sm text-center border-t border-white/20">
                 <div class="mb-6 flex justify-center">
-                    <div class="p-4 bg-indigo-600 rounded-2xl shadow-lg shadow-indigo-500/50">
-                        <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
+                    <div class="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-indigo-500/40 rotate-12">
+                        <i data-lucide="heart" class="text-white w-8 h-8"></i>
                     </div>
                 </div>
-                <h2 class="text-2xl font-bold mb-6">Fintech Access</h2>
-                <input type="email" x-model="loginForm.email" placeholder="Email" class="neo-input w-full p-3 rounded-xl mb-4">
-                <input type="password" x-model="loginForm.password" placeholder="Mot de passe" class="neo-input w-full p-3 rounded-xl mb-6">
-                <button @click="login()" class="w-full bg-indigo-600 hover:bg-indigo-500 p-3 rounded-xl font-semibold transition">Se connecter</button>
+                <h1 class="text-3xl font-bold mb-2">Ma Vie</h1>
+                <p class="text-gray-400 mb-8 text-sm">Gestion intelligente 3D</p>
+                
+                <div class="space-y-4">
+                    <input type="email" x-model="loginForm.email" placeholder="email@example.com" class="neo-input w-full p-4 rounded-xl">
+                    <input type="password" x-model="loginForm.pass" placeholder="password" class="neo-input w-full p-4 rounded-xl">
+                    <button @click="login()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold shadow-lg transition-transform active:scale-95">
+                        Démarrer l'expérience
+                    </button>
+                    <p x-show="error" class="text-red-500 text-xs mt-2" x-text="error"></p>
+                </div>
             </div>
         </div>
     </template>
 
-    <div class="flex h-screen overflow-hidden" x-show="isLoggedIn">
+    <div class="flex h-screen w-full p-2 md:p-4 gap-4" x-show="isLoggedIn">
         
-        <aside class="w-64 glass m-4 rounded-3xl flex flex-col p-6 hidden md:flex">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
-                    <i data-lucide="zap" class="text-white w-6 h-6"></i>
-                </div>
-                <span class="text-xl font-bold tracking-tight">V-FINANCE</span>
+        <aside class="w-20 md:w-72 glass rounded-[2.5rem] flex flex-col p-4 py-8 overflow-hidden">
+            <div class="hidden md:flex items-center gap-3 px-4 mb-10">
+                <div class="w-8 h-8 bg-indigo-500 rounded-lg"></div>
+                <span class="font-bold text-xl tracking-widest">MA VIE</span>
             </div>
 
-            <nav class="space-y-2 flex-1">
-                <template x-for="menu in menus" :key="menu.id">
-                    <button @click="currentTab = menu.id" 
-                            :class="currentTab === menu.id ? 'bg-indigo-600/20 text-indigo-400 border-l-4 border-indigo-500' : 'text-gray-400'"
-                            class="sidebar-item w-full flex items-center gap-4 p-3 rounded-xl transition-all duration-200">
-                        <i :data-lucide="menu.icon" class="w-5 h-5"></i>
-                        <span class="font-medium" x-text="menu.name"></span>
+            <nav class="flex-1 space-y-2 overflow-y-auto">
+                <template x-for="item in menu">
+                    <button @click="activeTab = item.id" 
+                            :class="activeTab === item.id ? 'active' : 'text-gray-500'"
+                            class="sidebar-item w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5">
+                        <i :data-lucide="item.icon" class="w-6 h-6"></i>
+                        <span class="hidden md:block font-medium text-sm" x-text="item.label"></span>
                     </button>
                 </template>
             </nav>
 
-            <button @click="isLoggedIn = false" class="text-red-400 flex items-center gap-4 p-3 hover:bg-red-500/10 rounded-xl transition">
-                <i data-lucide="log-out" class="w-5 h-5"></i>
-                <span>Déconnexion</span>
+            <button @click="logout()" class="p-4 text-red-400 hover:bg-red-500/10 rounded-xl flex items-center gap-4 mt-auto">
+                <i data-lucide="log-out" class="w-6 h-6"></i>
+                <span class="hidden md:block">Quitter</span>
             </button>
         </aside>
 
-        <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        <main class="flex-1 glass rounded-[2.5rem] p-6 md:p-10 overflow-y-auto relative">
             
-            <header class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold" x-text="menus.find(m => m.id === currentTab).name"></h1>
-                    <p class="text-gray-500">Gérez vos finances avec précision 3D</p>
-                </div>
-                <div class="glass px-4 py-2 rounded-2xl flex items-center gap-3">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-2xl md:text-4xl font-bold capitalize" x-text="menu.find(m => m.id === activeTab).label"></h2>
+                <div class="flex items-center gap-4">
                     <div class="text-right">
-                        <p class="text-xs text-gray-500">Solde Total</p>
-                        <p class="font-bold text-green-400 glow-text" x-text="formatCurrency(calculateWallet())"></p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-gray-800 border border-gray-700 flex items-center justify-center">
-                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest">Solde Portefeuille</p>
+                        <p class="text-xl font-bold text-indigo-400" x-text="format(calculatePortefeuille())"></p>
                     </div>
                 </div>
-            </header>
+            </div>
 
-            <section x-show="currentTab === 'jirama'" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div x-show="activeTab === 'jirama'" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="glass p-6 rounded-3xl">
-                        <h3 class="flex items-center gap-2 mb-4 text-yellow-400">
-                            <i data-lucide="zap" class="w-5 h-5"></i> Consommation (kWh)
+                        <h3 class="mb-4 flex items-center gap-2 font-semibold">
+                            <i data-lucide="calendar" class="text-indigo-400"></i> Calendrier de consommation (kWh)
                         </h3>
                         <div class="grid grid-cols-7 gap-2">
-                            <template x-for="day in 31" :key="day">
-                                <div :class="day >= 25 && day <= 30 ? 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.3)]' : 'border-gray-800'"
-                                     class="border rounded-lg p-1 text-center bg-black/20">
-                                    <span class="text-[10px] text-gray-500" x-text="day"></span>
-                                    <input type="number" x-model="data.jirama[day]" class="w-full bg-transparent text-center text-xs focus:outline-none">
+                            <template x-for="day in 31">
+                                <div :class="(day >= 25 && day <= 30) ? 'glow-releve' : ''" class="neo-input p-2 rounded-xl text-center">
+                                    <span class="text-[10px] block mb-1" x-text="day"></span>
+                                    <input type="number" x-model.number="db.jirama[day]" class="bg-transparent w-full text-center text-xs focus:outline-none">
                                 </div>
                             </template>
                         </div>
                     </div>
-                    <div class="glass p-6 rounded-3xl flex flex-col justify-center items-center text-center">
-                        <div class="p-4 bg-red-500/20 rounded-full mb-4 animate-pulse" x-show="checkJiramaAlert()">
-                            <i data-lucide="alert-triangle" class="text-red-500 w-10 h-10"></i>
-                        </div>
-                        <h4 class="text-xl font-bold">Alerte Intelligente</h4>
-                        <p class="text-gray-400 mt-2" x-text="checkJiramaAlert() ? 'Attention : Hausse de > 2.5kWh détectée !' : 'Consommation stable.'"></p>
-                    </div>
-                </div>
-            </section>
-
-            <section x-show="currentTab === 'ecolage'" class="glass p-8 rounded-3xl">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <template x-for="(status, month) in data.ecolage" :key="month">
-                        <div class="neo-input p-4 rounded-2xl flex flex-col items-center gap-3">
-                            <span class="capitalize font-semibold" x-text="month"></span>
-                            <button @click="data.ecolage[month] = !data.ecolage[month]"
-                                    :class="status ? 'bg-green-500' : 'bg-red-500'"
-                                    class="px-4 py-1 rounded-full text-xs font-bold transition-all">
-                                <span x-text="status ? 'PAYÉ' : 'IMPAYÉ'"></span>
-                            </button>
-                        </div>
-                    </template>
-                </div>
-            </section>
-
-            <section x-show="['shopping', 'adidy', 'medical'].includes(currentTab)" class="glass p-8 rounded-3xl max-w-2xl mx-auto">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-                    <i :data-lucide="menus.find(m => m.id === currentTab).icon" class="w-6 h-6"></i>
-                    Saisie des dépenses mensuelles
-                </h3>
-                <div class="space-y-4">
-                    <template x-for="month in months" :key="month">
-                        <div class="flex items-center justify-between p-3 neo-input rounded-xl">
-                            <span class="capitalize" x-text="month"></span>
-                            <input type="number" x-model="data[currentTab][month]" class="bg-transparent text-right focus:outline-none border-b border-gray-700 w-32" placeholder="0.00">
-                        </div>
-                    </template>
-                </div>
-            </section>
-
-            <section x-show="currentTab === 'wallet'" class="space-y-6">
-                <div class="glass p-8 rounded-3xl bg-gradient-to-br from-indigo-900/20 to-transparent border-indigo-500/30">
-                    <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                        <div class="w-full md:w-1/2">
-                            <label class="text-gray-400 text-sm mb-2 block">Salaire Mensuel Brut</label>
-                            <input type="number" x-model="data.salary" class="w-full text-4xl font-bold bg-transparent border-b-2 border-indigo-500 focus:outline-none glow-text text-white">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4 w-full md:w-1/2">
-                            <div class="p-4 bg-black/40 rounded-2xl border border-white/5">
-                                <p class="text-xs text-gray-500">Dépenses Fixes</p>
-                                <p class="text-xl font-bold text-red-400" x-text="formatCurrency(calculateTotalExpenses())"></p>
-                            </div>
-                            <div class="p-4 bg-indigo-600/20 rounded-2xl border border-indigo-500/20">
-                                <p class="text-xs text-indigo-300">Net Disponible</p>
-                                <p class="text-xl font-bold text-indigo-400" x-text="formatCurrency(calculateWallet())"></p>
-                            </div>
+                    <div class="flex flex-col gap-6">
+                        <div :class="jiramaAlert() ? 'alert-active bg-red-500/20 border-red-500' : 'opacity-50'" class="glass p-8 rounded-3xl transition-all">
+                            <i data-lucide="zap-off" :class="jiramaAlert() ? 'text-red-500' : 'text-gray-600'" class="w-12 h-12 mb-4"></i>
+                            <h4 class="text-xl font-bold">Alerte Surconsommation</h4>
+                            <p class="text-sm text-gray-400">Alerte si > 2.5kWh entre 2 jours.</p>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section x-show="currentTab === 'savings'" class="text-center py-10">
-                <div class="inline-block glass p-10 rounded-full mb-8 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
-                    <i data-lucide="piggy-bank" class="w-20 h-20 text-green-400 mx-auto mb-4"></i>
-                    <h2 class="text-5xl font-bold text-white glow-text" x-text="formatCurrency(calculateSavings())"></h2>
-                    <p class="text-green-400 font-semibold mt-2">Épargne Totale Générée</p>
-                </div>
-                <div class="max-w-md mx-auto neo-input p-6 rounded-3xl">
-                    <p class="text-sm text-gray-400 italic">"L'épargne est calculée en additionnant le solde de votre portefeuille et vos gains journaliers."</p>
-                </div>
-            </section>
+            <div x-show="activeTab === 'ecolage'" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <template x-for="m in mois">
+                    <div class="glass p-6 rounded-3xl flex flex-col items-center gap-4">
+                        <span class="font-bold capitalize" x-text="m"></span>
+                        <button @click="db.ecolage[m] = !db.ecolage[m]" 
+                                :class="db.ecolage[m] ? 'bg-green-500' : 'bg-red-500/20 text-red-500'"
+                                class="w-full py-2 rounded-xl text-xs font-bold transition">
+                            <span x-text="db.ecolage[m] ? 'PAYÉ' : 'À PAYER'"></span>
+                        </button>
+                    </div>
+                </template>
+            </div>
 
-            <section x-show="currentTab === 'goals'" class="glass p-8 rounded-3xl">
-                <h3 class="text-xl font-bold mb-6">Suivi des Gains Journaliers</h3>
-                <div class="grid grid-cols-4 md:grid-cols-7 gap-4">
-                    <template x-for="day in 31" :key="day">
-                        <div class="neo-input p-3 rounded-2xl">
-                            <span class="text-[10px] text-gray-500" x-text="'Jour ' + day"></span>
-                            <input type="number" x-model="data.dailyGains[day]" class="w-full bg-transparent text-sm font-bold focus:outline-none" placeholder="0">
+            <div x-show="['shopping', 'medical', 'adidy'].includes(activeTab)" class="max-w-2xl mx-auto space-y-3">
+                <template x-for="m in mois">
+                    <div class="glass p-4 rounded-2xl flex items-center justify-between">
+                        <span class="capitalize font-medium" x-text="m"></span>
+                        <input type="number" x-model.number="db[activeTab][m]" placeholder="0.00 Ar" 
+                               class="neo-input p-2 rounded-lg text-right w-40">
+                    </div>
+                </template>
+            </div>
+
+            <div x-show="activeTab === 'portefeuille'" class="space-y-8">
+                <div class="bg-indigo-600 p-8 rounded-[2rem] shadow-2xl shadow-indigo-500/20">
+                    <p class="text-indigo-200 text-sm mb-1 uppercase tracking-tighter">Votre Salaire Mensuel</p>
+                    <input type="number" x-model.number="db.salaire" class="bg-transparent text-4xl md:text-6xl font-bold text-white focus:outline-none w-full">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass p-6 rounded-3xl">
+                        <p class="text-gray-400 text-xs mb-4">RÉCAPITULATIF DES DÉPENSES</p>
+                        <ul class="space-y-4">
+                            <li class="flex justify-between"><span>Jirama (Total kWh x 500)</span> <span class="text-red-400" x-text="'- ' + format(totalJirama())"></span></li>
+                            <li class="flex justify-between"><span>Shopping</span> <span class="text-red-400" x-text="'- ' + format(db.shopping[currentMonth] || 0)"></span></li>
+                            <li class="flex justify-between"><span>Medical</span> <span class="text-red-400" x-text="'- ' + format(db.medical[currentMonth] || 0)"></span></li>
+                            <li class="flex justify-between"><span>ADIDY</span> <span class="text-red-400" x-text="'- ' + format(db.adidy[currentMonth] || 0)"></span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'epargne'" class="flex flex-col items-center justify-center py-20">
+                <div class="relative">
+                    <div class="w-64 h-64 rounded-full border-4 border-dashed border-indigo-500/30 flex items-center justify-center animate-[spin_20s_linear_infinite]"></div>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                        <i data-lucide="piggy-bank" class="w-12 h-12 text-indigo-400 mb-2"></i>
+                        <h3 class="text-4xl font-bold glow-text" x-text="format(calculateEpargne())"></h3>
+                        <p class="text-gray-400 text-sm">Épargne Totale</p>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="activeTab === 'objectif'" class="space-y-6">
+                <h3 class="font-bold text-xl mb-4">Gains Journaliers</h3>
+                <div class="grid grid-cols-4 md:grid-cols-7 gap-3">
+                    <template x-for="day in 31">
+                        <div class="neo-input p-3 rounded-2xl flex flex-col items-center">
+                            <span class="text-[10px] text-gray-500" x-text="'Jour '+day"></span>
+                            <input type="number" x-model.number="db.gains[day]" class="bg-transparent w-full text-center font-bold text-green-400 focus:outline-none">
                         </div>
                     </template>
                 </div>
-            </section>
+            </div>
 
         </main>
     </div>
 
     <script>
-        function appData() {
+        function app() {
             return {
                 isLoggedIn: false,
-                currentTab: 'wallet',
-                loginForm: { email: 'admin@fintech.com', password: '123' },
-                months: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
-                menus: [
-                    { id: 'wallet', name: 'Portefeuille', icon: 'wallet' },
-                    { id: 'jirama', name: 'Jirama', icon: 'zap' },
-                    { id: 'ecolage', name: 'Écolage', icon: 'graduation-cap' },
-                    { id: 'shopping', name: 'Shopping', icon: 'shopping-cart' },
-                    { id: 'adidy', name: 'ADIDY', icon: 'gift' },
-                    { id: 'medical', name: 'Médical', icon: 'heart-pulse' },
-                    { id: 'savings', name: 'Épargne', icon: 'landmark' },
-                    { id: 'goals', name: 'Objectifs', icon: 'target' },
+                activeTab: 'portefeuille',
+                error: '',
+                loginForm: { email: '', pass: '' },
+                currentMonth: 'avril',
+                mois: ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+                menu: [
+                    { id: 'portefeuille', label: 'Portefeuille', icon: 'wallet' },
+                    { id: 'jirama', label: 'Jirama', icon: 'zap' },
+                    { id: 'ecolage', label: 'Écolage', icon: 'graduation-cap' },
+                    { id: 'shopping', label: 'Shopping', icon: 'shopping-cart' },
+                    { id: 'medical', label: 'Médical', icon: 'heart-pulse' },
+                    { id: 'adidy', label: 'ADIDY', icon: 'gift' },
+                    { id: 'epargne', label: 'Épargne', icon: 'trending-up' },
+                    { id: 'objectif', label: 'Objectifs', icon: 'target' },
                 ],
-                data: {
-                    salary: 2500000,
+                db: {
+                    salaire: 0,
                     jirama: {},
-                    ecolage: { janvier: true, février: false, mars: false },
+                    ecolage: {},
                     shopping: {},
-                    adidy: {},
                     medical: {},
-                    dailyGains: {}
+                    adidy: {},
+                    gains: {}
                 },
 
                 init() {
-                    const saved = localStorage.getItem('fintech_data');
-                    if (saved) this.data = JSON.parse(saved);
-                    
-                    // Watch for changes and save
-                    this.$watch('data', (val) => {
-                        localStorage.setItem('fintech_data', JSON.stringify(val));
-                    }, { deep: true });
-
+                    const saved = localStorage.getItem('mavie_db');
+                    if (saved) this.db = JSON.parse(saved);
                     lucide.createIcons();
+                    this.$watch('db', val => localStorage.setItem('mavie_db', JSON.stringify(val)), { deep: true });
                 },
 
                 login() {
-                    // Simple logic for demo
-                    if (this.loginForm.email && this.loginForm.password) {
+                    if (this.loginForm.email === 'lectratana@gmail.com' && this.loginForm.pass === 'andy2050@@') {
                         this.isLoggedIn = true;
-                        setTimeout(() => lucide.createIcons(), 100);
+                        this.error = '';
+                        setTimeout(() => lucide.createIcons(), 50);
+                    } else {
+                        this.error = 'Identifiants incorrects.';
                     }
                 },
 
-                calculateTotalExpenses() {
-                    let total = 0;
-                    const currentMonth = 'janvier'; // Dynamique en prod
-                    total += parseFloat(this.data.shopping[currentMonth] || 0);
-                    total += parseFloat(this.data.adidy[currentMonth] || 0);
-                    total += parseFloat(this.data.medical[currentMonth] || 0);
-                    // Jirama simulé (ex: 500 Ar par kWh)
-                    let kwh = Object.values(this.data.jirama).reduce((a, b) => parseFloat(a||0) + parseFloat(b||0), 0);
-                    total += (kwh * 500);
-                    return total;
+                logout() { this.isLoggedIn = false; },
+
+                totalJirama() {
+                    // Simulation : 1kWh = 500 Ar (à ajuster selon vos besoins)
+                    let totalKwh = Object.values(this.db.jirama).reduce((a, b) => a + (parseFloat(b) || 0), 0);
+                    return totalKwh * 500; 
                 },
 
-                calculateWallet() {
-                    return this.data.salary - this.calculateTotalExpenses();
-                },
-
-                calculateSavings() {
-                    let gains = Object.values(this.data.dailyGains).reduce((a, b) => parseFloat(a||0) + parseFloat(b||0), 0);
-                    return this.calculateWallet() + gains;
-                },
-
-                checkJiramaAlert() {
-                    const values = Object.values(this.data.jirama);
-                    for(let i=1; i < values.length; i++) {
-                        if(Math.abs(values[i] - values[i-1]) > 2.5) return true;
+                jiramaAlert() {
+                    const days = Object.keys(this.db.jirama).sort((a,b) => a-b);
+                    for (let i = 1; i < days.length; i++) {
+                        let diff = Math.abs(this.db.jirama[days[i]] - this.db.jirama[days[i-1]]);
+                        if (diff > 2.5) return true;
                     }
                     return false;
                 },
 
-                formatCurrency(val) {
-                    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MGA' }).format(val);
+                calculatePortefeuille() {
+                    let m = this.currentMonth;
+                    let depenses = this.totalJirama() + 
+                                  (parseFloat(this.db.shopping[m]) || 0) + 
+                                  (parseFloat(this.db.medical[m]) || 0) + 
+                                  (parseFloat(this.db.adidy[m]) || 0);
+                    // On peut ajouter l'écolage ici si payé (logique simplifiée)
+                    return this.db.salaire - depenses;
+                },
+
+                calculateEpargne() {
+                    let totalGains = Object.values(this.db.gains).reduce((a, b) => a + (parseFloat(b) || 0), 0);
+                    return this.calculatePortefeuille() + totalGains;
+                },
+
+                format(val) {
+                    return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'MGA', maximumFractionDigits: 0 }).format(val);
                 }
             }
         }
