@@ -1,1 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ma vie</title>
 
+<style>
+body {margin:0;font-family:Arial;background:#1e1e2f;color:white;}
+.container {display:flex;height:100vh;}
+.sidebar {width:220px;background:#2c2c3e;padding:10px;}
+.menu-item {padding:12px;margin:5px 0;background:#3a3a50;border-radius:10px;cursor:pointer;}
+.menu-item:hover {background:#505070;}
+.main {flex:1;padding:20px;}
+.card {background:#2c2c3e;padding:20px;border-radius:15px;margin-bottom:15px;}
+.green {color:#00ff99;font-size:22px;}
+input {width:100%;padding:8px;margin-top:5px;border-radius:8px;border:none;}
+button {padding:10px;border:none;border-radius:10px;background:#00ff99;cursor:pointer;margin-top:10px;}
+
+#calendar {display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px;}
+.day {padding:10px;background:#444;text-align:center;border-radius:8px;cursor:pointer;}
+.highlight {background:orange;color:black;font-weight:bold;}
+.selected {background:#00ff99;color:black;}
+
+/* LOCK SCREEN */
+#lockScreen {
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:#000;display:flex;justify-content:center;align-items:center;flex-direction:column;
+z-index:9999;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔐 LOCK -->
+<div id="lockScreen">
+<h2>🔐 Mot de passe</h2>
+<input type="password" id="passwordInput" placeholder="Entrer mot de passe">
+<button onclick="unlock()">Entrer</button>
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+<h2>Ma vie</h2>
+<div class="menu-item" onclick="show('home')">Accueil</div>
+<div class="menu-item" onclick="show('jirama')">JIRAMA</div>
+<div class="menu-item" onclick="show('portefeuille')">Portefeuille</div>
+</div>
+
+<div class="main">
+
+<div id="home" class="section">
+<div class="card">
+<h3>Gain Journalier</h3>
+<input type="number" id="gainJour">
+</div>
+
+<div class="card">
+<h3>Gain Mensuel</h3>
+<p class="green" id="gainMois">0 Ar</p>
+</div>
+</div>
+
+<div id="jirama" class="section" style="display:none">
+<div class="card">
+<h3>JIRAMA (par jour)</h3>
+<input type="date" id="dateJirama">
+<input type="number" id="jiramaInput" placeholder="kWh">
+<button onclick="saveJirama()">Enregistrer</button>
+<p id="jiramaAlert"></p>
+<div id="calendar"></div>
+</div>
+</div>
+
+<div id="portefeuille" class="section" style="display:none">
+<div class="card">
+<h3>Salaire</h3>
+<input type="number" id="salaireInput">
+</div>
+
+<div class="card">
+<h3>Dépenses</h3>
+<input type="number" id="depenseInput" placeholder="Total dépenses">
+</div>
+
+<div class="card">
+<button onclick="calculer()">Calculer</button>
+<p class="green" id="resultat"></p>
+<p id="alerteDepense"></p>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* 🔐 PASSWORD */
+let savedPass = localStorage.getItem("password");
+
+if(!savedPass){
+localStorage.setItem("password","1234"); // mot de passe par défaut
+}
+
+function unlock(){
+let input = document.getElementById("passwordInput").value;
+if(input === localStorage.getItem("password")){
+document.getElementById("lockScreen").style.display="none";
+}else{
+alert("Mot de passe incorrect");
+}
+}
+
+/* NAV */
+function show(section){
+document.querySelectorAll('.section').forEach(s=>s.style.display="none");
+document.getElementById(section).style.display="block";
+}
+
+/* 📅 CALENDAR */
+function generateCalendar(){
+let cal=document.getElementById("calendar");
+cal.innerHTML="";
+for(let i=1;i<=30;i++){
+let d=document.createElement("div");
+d.classList.add("day");
+d.innerText=i;
+
+if(i>=25 && i<=30) d.classList.add("highlight");
+
+d.onclick=()=>selectDay(i,d);
+
+cal.appendChild(d);
+}}
+generateCalendar();
+
+function selectDay(day,el){
+document.querySelectorAll(".day").forEach(d=>d.classList.remove("selected"));
+el.classList.add("selected");
+}
+
+/* 💾 SAVE GLOBAL */
+function saveData(){
+localStorage.setItem("data", JSON.stringify({
+gainJour: gainJour.value,
+salaire: salaireInput.value,
+depense: depenseInput.value
+}));
+}
+
+/* LOAD */
+function loadData(){
+let data=JSON.parse(localStorage.getItem("data")||"{}");
+gainJour.value=data.gainJour||"";
+salaireInput.value=data.salaire||"";
+depenseInput.value=data.depense||"";
+updateGain();
+}
+loadData();
+
+/* AUTO SAVE */
+document.querySelectorAll("input").forEach(i=>{
+i.addEventListener("input", saveData);
+});
+
+/* 📅 JIRAMA PAR JOUR */
+function saveJirama(){
+let date=document.getElementById("dateJirama").value;
+let val=document.getElementById("jiramaInput").value;
+
+let jiramaData=JSON.parse(localStorage.getItem("jiramaData")||"{}");
+
+if(jiramaData[date]){
+if(val - jiramaData[date] > 2.5){
+jiramaAlert.innerText="⚠️ Consommation élevée !";
+}else{
+jiramaAlert.innerText="";
+}
+}
+
+jiramaData[date]=val;
+localStorage.setItem("jiramaData", JSON.stringify(jiramaData));
+}
+
+/* 💰 CALCUL + ALERTE */
+function calculer(){
+let salaire=+salaireInput.value||0;
+let depense=+depenseInput.value||0;
+let gain=+gainJour.value||0;
+
+let portefeuille=salaire-depense;
+let epargne=portefeuille+gain;
+
+resultat.innerText="Portefeuille: "+portefeuille+" Ar | Épargne: "+epargne+" Ar";
+
+/* ⚠️ ALERTE */
+if(depense > salaire*0.7){
+alerteDepense.innerText="⚠️ Tu dépenses trop !";
+}else{
+alerteDepense.innerText="";
+}
+}
+
+/* Gain */
+function updateGain(){
+gainMois.innerText=(gainJour.value*30||0)+" Ar";
+}
+gainJour.addEventListener("input", updateGain);
+
+</script>
+
+</body>
+</html>
