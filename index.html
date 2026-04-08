@@ -308,6 +308,7 @@
                     }
                 },
 
+                // Total Jirama (une seule fois)
                 totalJirama() {
                     let kwh = Object.values(this.db.jirama).reduce((a, b) => a + (Number(b) || 0), 0);
                     return kwh * 130;
@@ -321,10 +322,9 @@
                     return false;
                 },
 
-                // ✅ CALCUL CORRIGÉ - Jirama comptabilisé UNE SEULE FOIS
+                // Portefeuille par mois (Salaire - dépenses du mois SANS Jirama)
                 calcWallet(m) {
                     let cost = 0;
-                    // Jirama n'est plus ajouté ici pour chaque mois
                     if (this.db.ecolage[m]) cost += 100000;
                     cost += (Number(this.db.shopping[m]) || 0);
                     cost += (Number(this.db.medical[m]) || 0);
@@ -332,26 +332,30 @@
                     return this.db.salary - cost;
                 },
 
-                // ✅ Somme des portefeuilles mensuels
+                // ✅ Total des portefeuilles (tous les mois)
                 sumWallet() {
                     return this.months.reduce((acc, m) => acc + this.calcWallet(m), 0);
                 },
 
-                // ✅ Total des gains journaliers
+                // ✅ Total des gains journaliers (Objectif)
                 sumGains() {
                     return Object.values(this.db.gains).reduce((a, b) => a + (Number(b) || 0), 0);
                 },
 
-                // ✅ FORMULE FINALE CORRECTE
-                // Épargne = (Salaire × 12) + Gains - Jirama - Toutes dépenses
+                // ✅ FORMULE EXACTE: Épargne = (Portefeuille + Objectif) - Dépenses
                 calcTotalSavings() {
-                    const totalRevenu = (this.db.salary * 12) + this.sumGains();
-                    const totalDepenses = this.totalJirama() + this.sumAllExpenses();
-                    return totalRevenu - totalDepenses;
+                    const portefeuille = this.sumWallet();  // Somme des portefeuilles mensuels
+                    const objectif = this.sumGains();        // Total gains journaliers
+                    
+                    // Total des dépenses (Jirama + toutes les dépenses mensuelles)
+                    const depenses = this.totalJirama() + this.sumAllMonthlyExpenses();
+                    
+                    // Épargne = (Portefeuille + Objectif) - Dépenses
+                    return (portefeuille + objectif) - depenses;
                 },
 
-                // ✅ NOUVELLE MÉTHODE : Somme de toutes les dépenses
-                sumAllExpenses() {
+                // ✅ Somme de TOUTES les dépenses mensuelles (SANS Jirama)
+                sumAllMonthlyExpenses() {
                     let total = 0;
                     this.months.forEach(m => {
                         if (this.db.ecolage[m]) total += 100000;
