@@ -3,82 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Vie 3D - Multi-User</title>
+    <title>Ma Vie - 3D Ultra Slim Sidebar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background: #08080a; color: #f1f5f9; overflow: hidden; }
-        .glass { background: rgba(18, 18, 22, 0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .neo-card { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .sidebar-compact { width: 70px; transition: width 0.3s ease; }
-        @media (min-width: 1024px) { .sidebar-compact { width: 240px; } }
-        .nav-btn { transition: all 0.2s ease; color: #64748b; }
-        .nav-btn.active { background: rgba(99, 102, 241, 0.1); color: #818cf8; border-right: 3px solid #6366f1; }
+    
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #08080a;
+            color: #f1f5f9;
+            overflow: hidden;
+        }
+
+        .glass {
+            background: rgba(18, 18, 22, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .neo-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .sidebar-compact {
+            width: 70px;
+            transition: width 0.3s ease;
+        }
+        
+        @media (min-width: 1024px) {
+            .sidebar-compact { width: 240px; }
+        }
+
+        .nav-btn {
+            transition: all 0.2s ease;
+            color: #64748b;
+        }
+
+        .nav-btn.active {
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            border-right: 3px solid #6366f1;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
     </style>
 </head>
 <body x-data="app()" x-init="init()">
 
     <template x-if="!isLoggedIn">
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#08080a] p-4">
-            <div class="glass p-6 rounded-[2rem] w-full max-w-xs border border-white/10 shadow-2xl">
-                <div class="w-12 h-12 bg-indigo-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                    <i data-lucide="shield-check" class="text-white w-6 h-6"></i>
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#08080a] p-6">
+            <div class="glass p-8 rounded-[2rem] w-full max-sm border border-white/10 shadow-2xl">
+                <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
                 </div>
-                <h1 class="text-xl font-bold text-center mb-6 tracking-tight">Ma Vie 3D</h1>
-                <div class="space-y-3">
-                    <input type="email" x-model="loginData.email" placeholder="Email" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-indigo-500 transition-all">
-                    <input type="password" x-model="loginData.pass" placeholder="Mot de passe" class="w-full bg-black/40 border border-white/10 p-3 rounded-xl text-sm focus:outline-none focus:border-indigo-500 transition-all">
-                    <button @click="handleLogin" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-sm font-bold transition-all active:scale-95 shadow-lg shadow-indigo-500/20">Entrer</button>
+                <h1 class="text-2xl font-bold text-center mb-8">Ma Vie 3D</h1>
+                <div class="space-y-4">
+                    <input type="email" x-model="loginData.email" placeholder="Email" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-indigo-500">
+                    <input type="password" x-model="loginData.pass" placeholder="Password" class="w-full bg-black/40 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-indigo-500">
+                    <button @click="handleLogin" class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold transition-all active:scale-95">Entrer</button>
                 </div>
             </div>
         </div>
     </template>
 
     <div class="flex h-screen w-full overflow-hidden" x-show="isLoggedIn">
+        
         <aside class="sidebar-compact glass h-full flex flex-col items-center lg:items-start py-8 border-r border-white/5 overflow-y-auto">
             <div class="px-6 mb-12 flex items-center gap-3">
-                <div class="min-w-[40px] h-10 bg-indigo-600 rounded-xl flex items-center justify-center"><i data-lucide="heart" class="text-white w-5 h-5"></i></div>
-                <span class="hidden lg:block font-bold text-lg tracking-tight uppercase">Dashboard</span>
+                <div class="min-w-[40px] h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
+                    <i data-lucide="heart" class="text-white w-5 h-5"></i>
+                </div>
+                <span class="hidden lg:block font-bold text-lg tracking-tight">MA VIE</span>
             </div>
+
             <nav class="w-full flex-1 space-y-1">
                 <template x-for="item in menu">
-                    <button @click="tab = item.id" :class="tab === item.id ? 'active' : ''" class="nav-btn w-full flex items-center px-6 py-4 hover:text-white group">
+                    <button @click="tab = item.id" 
+                            :class="tab === item.id ? 'active' : ''"
+                            class="nav-btn w-full flex items-center px-6 py-4 hover:text-white transition-colors group">
                         <i :data-lucide="item.icon" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
                         <span class="hidden lg:block ml-4 text-sm font-medium" x-text="item.label"></span>
                     </button>
                 </template>
             </nav>
-            <button @click="handleLogout" class="px-6 py-4 text-gray-500 hover:text-red-400 transition-colors w-full flex items-center">
+
+            <button @click="isLoggedIn = false" class="px-6 py-4 text-gray-500 hover:text-red-400 transition-colors w-full flex items-center">
                 <i data-lucide="log-out" class="w-5 h-5"></i>
-                <span class="hidden lg:block ml-4 text-sm font-medium">Déconnexion</span>
+                <span class="hidden lg:block ml-4 text-sm font-medium">Sortie</span>
             </button>
         </aside>
 
         <main class="flex-1 h-full overflow-y-auto bg-gradient-to-br from-black to-[#0c0c10] p-4 lg:p-10">
+            
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12">
                 <div>
                     <h2 class="text-3xl lg:text-4xl font-bold" x-text="menu.find(m => m.id === tab).label"></h2>
-                    <p class="text-gray-500 text-sm mt-1">Utilisateur : <span class="text-indigo-400" x-text="loginData.email"></span></p>
+                    <p class="text-gray-500 text-sm mt-1">Mois actif : <span class="capitalize" x-text="currentMonth"></span></p>
                 </div>
+                
                 <select x-model="currentMonth" class="bg-indigo-600 text-white p-3 rounded-xl font-bold focus:outline-none">
-                    <template x-for="m in months"><option :value="m" x-text="m" class="capitalize"></option></template>
+                    <template x-for="m in months">
+                        <option :value="m" x-text="m" class="capitalize"></option>
+                    </template>
                 </select>
+
+                <div class="neo-card p-4 rounded-2xl flex items-center gap-4 px-6 border border-indigo-500/20">
+                    <div class="text-right">
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Portefeuille <span x-text="currentMonth"></span></p>
+                        <p class="text-xl font-bold text-indigo-400" x-text="formatAr(calcWallet(currentMonth))"></p>
+                    </div>
+                    <i data-lucide="wallet" class="text-indigo-500"></i>
+                </div>
             </div>
 
             <div x-show="tab === 'portefeuille'" class="max-w-3xl mx-auto">
-                <div class="glass p-8 lg:p-12 rounded-[2.5rem]">
-                    <label class="text-xs uppercase tracking-widest text-gray-500 font-bold">Mon Salaire Mensuel</label>
+                <div class="glass p-8 lg:p-12 rounded-[2.5rem] relative overflow-hidden">
+                    <label class="text-xs uppercase tracking-[0.2em] text-gray-500">Mon Salaire Mensuel</label>
                     <div class="flex items-center gap-4 mt-2">
                         <input type="number" x-model.number="db.salary" class="bg-transparent text-5xl lg:text-7xl font-black text-white focus:outline-none w-full">
                         <span class="text-2xl font-bold text-gray-700">Ar</span>
                     </div>
+                    
                     <div class="mt-12 space-y-3">
                         <template x-for="cat in expenseCategories">
                             <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl">
@@ -86,7 +139,15 @@
                                 <span class="text-red-400 font-bold" x-text="'- ' + formatAr(getMonthExpense(cat, currentMonth))"></span>
                             </div>
                         </template>
-                        <div class="flex justify-between items-center p-6 bg-indigo-500/10 rounded-2xl border border-indigo-500/30 mt-6">
+
+                        <div class="border-t border-white/10 my-6"></div>
+
+                        <div class="flex justify-between items-center p-6 bg-red-500/10 rounded-2xl border border-red-500/20">
+                            <span class="text-lg font-bold">Total Dépenses</span>
+                            <span class="text-red-400 font-black text-2xl" x-text="'- ' + formatAr(getTotalExpenses(currentMonth))"></span>
+                        </div>
+
+                        <div class="flex justify-between items-center p-6 bg-indigo-500/10 rounded-2xl border border-indigo-500/30">
                             <span class="text-lg font-bold">Reste Net</span>
                             <span class="text-indigo-400 font-black text-3xl" x-text="formatAr(calcWallet(currentMonth))"></span>
                         </div>
@@ -95,53 +156,66 @@
             </div>
 
             <div x-show="tab === 'epargne'" class="max-w-2xl mx-auto space-y-3">
+                <div class="bg-indigo-600/10 p-6 rounded-2xl mb-6 text-center border border-indigo-500/20">
+                    <p class="text-gray-400 text-sm">Cumul Total Épargné</p>
+                    <h3 class="text-4xl font-black text-indigo-400" x-text="formatAr(sumGains())"></h3>
+                </div>
                 <template x-for="m in months">
                     <div class="glass p-4 rounded-2xl flex items-center justify-between border-l-4 border-transparent hover:border-green-500 transition-all">
                         <span class="capitalize font-medium text-gray-300" x-text="m"></span>
-                        <input type="number" x-model.number="db.gains[m]" placeholder="0" class="bg-black/40 p-3 rounded-xl text-right w-40 focus:border-green-500 border border-white/5 outline-none">
+                        <div class="flex items-center gap-3">
+                            <input type="number" x-model.number="db.gains[m]" placeholder="0" class="bg-black/40 p-3 rounded-xl text-right w-40 focus:border-green-500 border border-white/5">
+                            <span class="text-xs text-gray-600 font-bold">Ar</span>
+                        </div>
                     </div>
                 </template>
             </div>
 
             <div x-show="tab === 'objectif'" class="max-w-2xl mx-auto">
                 <div class="bg-indigo-600/10 p-4 rounded-2xl mb-6 flex items-center justify-between border border-indigo-500/20">
-                    <span class="text-sm font-bold text-indigo-400">Objectifs - <span class="capitalize" x-text="currentMonth"></span></span>
+                    <span class="text-sm font-bold text-indigo-400">Objectifs du mois : <span class="capitalize" x-text="currentMonth"></span></span>
+                    <i data-lucide="target" class="w-5 h-5 text-indigo-400"></i>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <template x-for="i in [0,1,2,3,4]">
                         <div class="glass p-4 rounded-2xl flex items-center gap-4">
-                            <span class="text-gray-600 font-bold" x-text="i+1"></span>
-                            <input type="text" x-model="db.targets[currentMonth][i]" placeholder="Définir un objectif..." class="bg-transparent border-b border-white/5 focus:border-indigo-500 outline-none w-full py-1">
+                            <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-gray-500" x-text="i+1"></div>
+                            <input type="text" x-model="db.targets[currentMonth][i]" placeholder="Entrez un objectif..." 
+                                   class="bg-transparent border-b border-white/5 focus:border-indigo-500 outline-none w-full py-2 transition-colors">
                         </div>
                     </template>
                 </div>
             </div>
-            
-            <div x-show="expenseCategories.includes(tab)" class="max-w-2xl mx-auto space-y-3">
+
+            <div x-show="['jirama','ecolage','shopping','medical','adidy','loyer','lessive','frais','repas','autres'].includes(tab)" class="max-w-2xl mx-auto space-y-3">
                 <template x-for="m in months">
                     <div class="glass p-4 rounded-2xl flex items-center justify-between border-l-4 border-transparent hover:border-indigo-500 transition-all">
                         <span class="capitalize font-medium text-gray-300" x-text="m"></span>
-                        <input type="number" x-model.number="db[tab][m]" placeholder="0" class="bg-black/40 p-3 rounded-xl text-right w-40 border border-white/5 outline-none">
+                        <div class="flex items-center gap-3">
+                            <input type="number" x-model.number="db[tab][m]" placeholder="0" class="bg-black/40 p-3 rounded-xl text-right w-40 focus:border-indigo-500 border border-white/5">
+                            <span class="text-xs text-gray-600 font-bold" x-text="tab === 'jirama' ? 'kW' : 'Ar'"></span>
+                        </div>
                     </div>
                 </template>
             </div>
+
         </main>
     </div>
 
     <script>
-        const firebaseConfig = {
+        var firebaseConfig = {
             apiKey: "AIzaSyBY_zHJAaNLtXDBlD1TYMzALlMlMHNBwWk",
             authDomain: "aiza-38b31.firebaseapp.com",
             databaseURL: "https://aiza-38b31-default-rtdb.europe-west1.firebasedatabase.app/",
             projectId: "aiza-38b31",
             storageBucket: "aiza-38b31.firebasestorage.app",
             messagingSenderId: "850157491678",
-            appId: "1:850157491678:web:614b2b70b934cf09fcb94f"
+            appId: "1:850157491678:web:614b2b70b934cf09fcb94f",
+            measurementId: "G-S6X470367V"
         };
         
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const rtdb = firebase.database();
+        var fbRef = firebase.database().ref('ma_vie_v3');
 
         function app() {
             return {
@@ -153,58 +227,82 @@
                 expenseCategories: ['jirama', 'ecolage', 'shopping', 'medical', 'adidy', 'loyer', 'lessive', 'frais', 'repas', 'autres'],
                 menu: [
                     { id: 'portefeuille', label: 'Portefeuille', icon: 'wallet' },
-                    { id: 'epargne', label: 'Épargne', icon: 'landmark' },
-                    { id: 'objectif', label: 'Objectifs', icon: 'target' },
                     { id: 'jirama', label: 'Jirama', icon: 'zap' },
                     { id: 'ecolage', label: 'Écolage', icon: 'graduation-cap' },
+                    { id: 'shopping', label: 'Shopping', icon: 'shopping-cart' },
+                    { id: 'medical', label: 'Médical', icon: 'heart-pulse' },
+                    { id: 'adidy', label: 'ADIDY', icon: 'gift' },
                     { id: 'loyer', label: 'Loyer', icon: 'home' },
+                    { id: 'lessive', label: 'Lessive', icon: 'droplet' },
+                    { id: 'frais', label: 'Frais', icon: 'file-text' },
                     { id: 'repas', label: 'Repas', icon: 'utensils' },
-                    { id: 'autres', label: 'Autres', icon: 'more-horizontal' }
+                    { id: 'autres', label: 'Autres', icon: 'more-horizontal' },
+                    { id: 'epargne', label: 'Épargne', icon: 'landmark' },
+                    { id: 'objectif', label: 'Objectifs', icon: 'target' },
                 ],
-                db: { salary: 0, jirama: {}, ecolage: {}, shopping: {}, medical: {}, adidy: {}, loyer: {}, lessive: {}, frais: {}, repas: {}, autres: {}, gains: {}, targets: {} },
+                db: {
+                    salary: 0,
+                    jirama: {}, ecolage: {}, shopping: {}, medical: {}, adidy: {},
+                    loyer: {}, lessive: {}, frais: {}, repas: {}, autres: {}, 
+                    gains: {}, targets: {}
+                },
 
                 init() {
-                    auth.onAuthStateChanged(user => {
-                        if (user) {
-                            this.isLoggedIn = true;
-                            this.loginData.email = user.email;
-                            this.syncData(user.uid);
-                        }
-                    });
-                },
-
-                handleLogin() {
-                    auth.signInWithEmailAndPassword(this.loginData.email, this.loginData.pass)
-                        .catch(err => alert("Erreur : " + err.message));
-                },
-
-                handleLogout() {
-                    auth.signOut().then(() => { location.reload(); });
-                },
-
-                syncData(uid) {
-                    const userRef = rtdb.ref('users/' + uid);
-                    userRef.on('value', snapshot => {
+                    fbRef.on('value', (snapshot) => {
                         if (snapshot.exists()) {
-                            let data = snapshot.val();
-                            // Garantir la structure des objectifs
+                            const data = snapshot.val();
+                            
+                            // Initialisation de la structure des objectifs si inexistante
                             if(!data.targets) data.targets = {};
-                            this.months.forEach(m => { if(!data.targets[m]) data.targets[m] = ["","","","",""]; });
+                            this.months.forEach(m => {
+                                if(!data.targets[m]) data.targets[m] = ["","","","",""];
+                            });
+                            
+                            // Initialisation épargne
                             if(!data.gains) data.gains = {};
+
                             this.db = data;
                         }
                         setTimeout(() => lucide.createIcons(), 100);
                     });
 
-                    this.$watch('db', val => { if(this.isLoggedIn) userRef.set(val); }, { deep: true });
+                    this.$watch('db', val => {
+                        fbRef.set(val);
+                    }, { deep: true });
                 },
 
-                getMonthExpense(cat, m) { return Number(this.db[cat]?.[m]) || 0; },
-                calcWallet(m) {
-                    const totalExp = this.expenseCategories.reduce((sum, cat) => sum + this.getMonthExpense(cat, m), 0);
-                    return (Number(this.db.salary) || 0) - totalExp;
+                handleLogin() {
+                    if (this.loginData.email === 'lectratana@gmail.com' && this.loginData.pass === 'andy2050@@') {
+                        this.isLoggedIn = true;
+                        setTimeout(() => lucide.createIcons(), 50);
+                    }
                 },
-                formatAr(v) { return new Intl.NumberFormat('fr-FR').format(v || 0) + ' Ar'; }
+
+                getMonthExpense(category, month) {
+                    if (category === 'jirama') {
+                        return (Number(this.db.jirama?.[month]) || 0) * 130;
+                    }
+                    return Number(this.db[category]?.[month]) || 0;
+                },
+
+                getTotalExpenses(month) {
+                    return this.expenseCategories.reduce((total, cat) => {
+                        return total + this.getMonthExpense(cat, month);
+                    }, 0);
+                },
+
+                calcWallet(month) {
+                    return (Number(this.db.salary) || 0) - this.getTotalExpenses(month);
+                },
+
+                sumGains() {
+                    if (!this.db.gains) return 0;
+                    return Object.values(this.db.gains).reduce((a, b) => a + (Number(b) || 0), 0);
+                },
+
+                formatAr(v) {
+                    return new Intl.NumberFormat('fr-FR').format(v || 0) + ' Ar';
+                }
             }
         }
     </script>
