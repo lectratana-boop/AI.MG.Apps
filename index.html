@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ma Vie 3D - Multi-Utilisateurs</title>
+    <title>Ma Vie 3D - Gestion Privée</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -19,60 +19,69 @@
         .sidebar-compact { width: 70px; transition: width 0.3s ease; }
         @media (min-width: 1024px) { .sidebar-compact { width: 240px; } }
         .nav-btn.active { background: rgba(99, 102, 241, 0.1); color: #818cf8; border-right: 3px solid #6366f1; }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
 <body x-data="app()" x-init="init()">
 
-    <template x-if="!isLoggedIn">
-        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#08080a] p-6">
+    <template x-if="showSplash">
+        <div class="fixed inset-0 z-[100] bg-[#08080a] flex items-center justify-center">
+            <video autoplay muted playsinline class="w-full h-full object-cover" @ended="showSplash = false">
+                <source src="splash.mp4.mp4" type="video/mp4">
+            </video>
+        </div>
+    </template>
+
+    <template x-if="!showSplash && !isLoggedIn">
+        <div class="fixed inset-0 z-50 flex items-center justify-center bg-[#08080a] p-6" x-cloak>
             <div class="glass p-8 rounded-[2rem] w-full max-w-[380px] border border-white/10 shadow-2xl text-center">
-                <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg">
+                <div class="w-16 h-16 bg-indigo-600 rounded-2xl mx-auto mb-6 flex items-center justify-center shadow-lg shadow-indigo-600/30">
                     <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
                 </div>
                 <h1 class="text-2xl font-bold mb-8">Ma Vie 3D</h1>
-                <div class="space-y-4">
+                <div class="space-y-4 text-left">
                     <input type="email" x-model="loginData.email" placeholder="Email" 
                            class="w-full bg-black/40 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-indigo-500 text-sm">
                     <input type="password" x-model="loginData.pass" placeholder="Mot de passe" 
                            class="w-full bg-black/40 border border-white/10 p-4 rounded-xl focus:outline-none focus:border-indigo-500 text-sm">
                     <button @click="handleLogin" 
-                            class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-indigo-600/20">
-                        Se connecter
+                            class="w-full bg-indigo-600 hover:bg-indigo-500 py-4 rounded-xl font-bold transition-all active:scale-95">
+                        Entrer dans l'interface
                     </button>
-                    <p x-show="errorMessage" x-text="errorMessage" class="text-red-400 text-xs mt-2"></p>
+                    <p x-show="errorMessage" x-text="errorMessage" class="text-red-400 text-xs text-center mt-2" x-cloak></p>
                 </div>
             </div>
         </div>
     </template>
 
     <div class="flex h-screen w-full overflow-hidden" x-show="isLoggedIn" x-cloak>
-        <aside class="sidebar-compact glass h-full flex flex-col items-center lg:items-start py-8 border-r border-white/5">
+        <aside class="sidebar-compact glass h-full flex flex-col items-center lg:items-start py-8 border-r border-white/5 overflow-y-auto">
             <div class="px-6 mb-12 flex items-center gap-3">
                 <div class="min-w-[40px] h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
                     <i data-lucide="heart" class="text-white w-5 h-5"></i>
                 </div>
-                <span class="hidden lg:block font-bold text-lg">MA VIE</span>
+                <span class="hidden lg:block font-bold text-lg tracking-tight">MA VIE</span>
             </div>
-            <nav class="w-full flex-1 space-y-1 overflow-y-auto">
+            <nav class="w-full flex-1 space-y-1">
                 <template x-for="item in menu">
                     <button @click="tab = item.id" :class="tab === item.id ? 'active' : ''"
-                            class="nav-btn w-full flex items-center px-6 py-4 hover:text-white transition-colors group">
+                            class="nav-btn w-full flex items-center px-6 py-4 hover:text-white group">
                         <i :data-lucide="item.icon" class="w-5 h-5"></i>
                         <span class="hidden lg:block ml-4 text-sm font-medium" x-text="item.label"></span>
                     </button>
                 </template>
             </nav>
-            <button @click="handleLogout" class="px-6 py-4 text-gray-500 hover:text-red-400 w-full flex items-center">
+            <button @click="handleLogout" class="px-6 py-4 text-gray-500 hover:text-red-400 w-full flex items-center mt-auto">
                 <i data-lucide="log-out" class="w-5 h-5"></i>
                 <span class="hidden lg:block ml-4 text-sm font-medium">Déconnexion</span>
             </button>
         </aside>
 
-        <main class="flex-1 h-full overflow-y-auto p-4 lg:p-10 bg-gradient-to-br from-[#08080a] to-[#0c0c10]">
+        <main class="flex-1 h-full overflow-y-auto bg-gradient-to-br from-[#08080a] to-[#0c0c10] p-4 lg:p-10">
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12">
                 <div>
                     <h2 class="text-3xl lg:text-4xl font-bold" x-text="menu.find(m => m.id === tab).label"></h2>
-                    <p class="text-gray-500 text-sm mt-1">Utilisateur : <span class="text-indigo-400" x-text="loginData.email"></span></p>
+                    <p class="text-gray-500 text-sm mt-1">Session : <span class="text-indigo-400 font-mono" x-text="loginData.email"></span></p>
                 </div>
                 <div class="flex items-center gap-4">
                     <select x-model="currentMonth" class="bg-indigo-600 text-white p-3 rounded-xl font-bold outline-none">
@@ -80,7 +89,7 @@
                     </select>
                     <div class="glass p-4 rounded-2xl flex items-center gap-4 px-6 border border-indigo-500/20">
                         <div class="text-right">
-                            <p class="text-[10px] text-gray-500 uppercase tracking-widest">Net <span x-text="currentMonth"></span></p>
+                            <p class="text-[10px] text-gray-500 uppercase font-semibold">Net Mensuel</p>
                             <p class="text-xl font-bold text-indigo-400" x-text="formatAr(calcWallet(currentMonth))"></p>
                         </div>
                         <i data-lucide="wallet" class="text-indigo-500"></i>
@@ -88,13 +97,13 @@
                 </div>
             </div>
 
-            <div x-show="tab === 'portefeuille'" class="max-w-3xl mx-auto glass p-8 rounded-[2.5rem]">
-                <label class="text-xs uppercase text-gray-500 tracking-widest">Mon Salaire Mensuel</label>
-                <div class="flex items-center gap-4 mt-2">
-                    <input type="number" x-model.number="db.salary" class="bg-transparent text-5xl font-black text-white focus:outline-none w-full">
+            <div x-show="tab === 'portefeuille'" class="max-w-3xl mx-auto glass p-8 lg:p-12 rounded-[2.5rem]">
+                <label class="text-xs uppercase tracking-widest text-gray-500">Mon Salaire</label>
+                <div class="flex items-center gap-4 mt-2 mb-10">
+                    <input type="number" x-model.number="db.salary" class="bg-transparent text-5xl lg:text-7xl font-black text-white focus:outline-none w-full">
                     <span class="text-2xl font-bold text-gray-700">Ar</span>
                 </div>
-                <div class="mt-12 space-y-3">
+                <div class="space-y-3">
                     <template x-for="cat in expenseCategories">
                         <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl">
                             <span class="text-sm capitalize" x-text="cat"></span>
@@ -106,11 +115,11 @@
 
             <div x-show="expenseCategories.concat(['epargne']).includes(tab)" class="max-w-2xl mx-auto space-y-3">
                 <template x-for="m in months">
-                    <div class="glass p-4 rounded-2xl flex items-center justify-between border-l-4 border-transparent hover:border-indigo-500 transition-all">
+                    <div class="glass p-4 rounded-2xl flex items-center justify-between border-l-4 border-transparent hover:border-indigo-500">
                         <span class="capitalize font-medium text-gray-300" x-text="m"></span>
                         <div class="flex items-center gap-3">
                             <input type="number" x-model.number="tab === 'epargne' ? db.gains[m] : db[tab][m]" 
-                                   class="bg-black/40 p-3 rounded-xl text-right w-40 focus:border-indigo-500 border border-white/5">
+                                   class="bg-black/40 p-3 rounded-xl text-right w-40 focus:border-indigo-500 border border-white/5 outline-none">
                             <span class="text-xs text-gray-600 font-bold" x-text="tab === 'jirama' ? 'kW' : 'Ar'"></span>
                         </div>
                     </div>
@@ -120,7 +129,7 @@
     </div>
 
     <script>
-        // CONFIGURATION FIREBASE (Inchangée)
+        // CONFIGURATION FIREBASE PROJET AIZA
         var firebaseConfig = {
             apiKey: "AIzaSyBY_zHJAaNLtXDBlD1TYMzALlMlMHNBwWk",
             authDomain: "aiza-38b31.firebaseapp.com",
@@ -134,6 +143,7 @@
 
         function app() {
             return {
+                showSplash: true,
                 isLoggedIn: false,
                 errorMessage: '',
                 tab: 'portefeuille',
@@ -155,47 +165,39 @@
                     { id: 'autres', label: 'Autres', icon: 'more-horizontal' },
                     { id: 'epargne', label: 'Épargne', icon: 'landmark' }
                 ],
-                db: { salary: 0, jirama: {}, ecolage: {}, shopping: {}, medical: {}, adidy: {}, loyer: {}, lessive: {}, frais: {}, repas: {}, autres: {}, gains: {}, targets: {} },
+                db: { salary: 0, jirama: {}, ecolage: {}, shopping: {}, medical: {}, adidy: {}, loyer: {}, lessive: {}, frais: {}, repas: {}, autres: {}, gains: {} },
                 
                 init() {
-                    lucide.createIcons();
+                    // La vidéo se ferme d'elle-même grâce à @ended="showSplash = false"
+                    // On ajoute un délai de sécurité si la vidéo ne charge pas
+                    setTimeout(() => { if(this.showSplash) this.showSplash = false; lucide.createIcons(); }, 10000);
                 },
 
-                // 3. CLOISONNEMENT DES DONNÉES (SÉPARÉ DE AIZA_DATA)
                 syncData(uid) {
+                    // CLOISONNEMENT : On stocke tout sous 'mavie_data' pour ne pas toucher à 'aiza_data'
                     const userRef = firebase.database().ref('mavie_data/users/' + uid);
                     userRef.on('value', (snapshot) => {
-                        if (snapshot.exists()) {
-                            this.db = snapshot.val();
-                        } else {
-                            // Initialisation automatique du dossier utilisateur
-                            userRef.set(this.db);
-                        }
+                        if (snapshot.exists()) { this.db = snapshot.val(); }
                         setTimeout(() => lucide.createIcons(), 100);
                     });
-
                     this.$watch('db', val => { if(this.isLoggedIn) userRef.set(JSON.parse(JSON.stringify(val))); }, { deep: true });
                 },
 
                 handleLogin() {
                     this.errorMessage = '';
                     firebase.auth().signInWithEmailAndPassword(this.loginData.email, this.loginData.pass)
-                        .then((userCredential) => {
+                        .then((user) => {
                             this.isLoggedIn = true;
-                            this.syncData(userCredential.user.uid);
-                            setTimeout(() => lucide.createIcons(), 100);
+                            this.syncData(user.user.uid);
+                            setTimeout(() => lucide.createIcons(), 150);
                         })
-                        .catch((error) => {
-                            this.errorMessage = "Identifiants invalides ou erreur Firebase.";
-                            console.error(error);
+                        .catch((err) => {
+                            this.errorMessage = "Email ou mot de passe incorrect.";
                         });
                 },
 
                 handleLogout() {
-                    firebase.auth().signOut().then(() => {
-                        this.isLoggedIn = false;
-                        location.reload();
-                    });
+                    firebase.auth().signOut().then(() => { location.reload(); });
                 },
 
                 getMonthExpense(cat, m) {
@@ -207,10 +209,7 @@
                     return this.expenseCategories.reduce((t, c) => t + this.getMonthExpense(c, m), 0);
                 },
 
-                calcWallet(m) {
-                    return (Number(this.db.salary) || 0) - this.getTotalExpenses(m);
-                },
-
+                calcWallet(m) { return (Number(this.db.salary) || 0) - this.getTotalExpenses(m); },
                 formatAr(v) { return new Intl.NumberFormat('fr-FR').format(v || 0) + ' Ar'; }
             }
         }
