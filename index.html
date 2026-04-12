@@ -29,7 +29,7 @@
         .finance-amount { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #f9f3c1, #ffe6a3); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .month-selector { background: rgba(255,255,255,0.15); border-radius: 60px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 12px; margin-bottom: 16px; }
         .cat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; }
-        .cat-btn { background: rgba(255,255,255,0.2); border-radius: 60px; padding: 6px 16px; font-size: 0.75rem; font-weight: 600; cursor: pointer; }
+        .cat-btn { background: rgba(255,255,255,0.2); border-radius: 60px; padding: 6px 16px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .cat-active { background: linear-gradient(135deg, #a06eff, #6c3eff); color: white; }
         .expense-item { display: flex; justify-content: space-between; background: rgba(255,255,245,0.9); padding: 10px 16px; border-radius: 40px; margin-bottom: 8px; color: #1e1e2a; font-weight: 500; }
         .header-app { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -38,6 +38,8 @@
         .search-box input { margin: 0; padding: 8px; }
         .object-card { background: rgba(255,255,255,0.9); border-radius: 24px; padding: 14px; margin-bottom: 12px; color: #1a1a2e; }
         .photo-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 16px; margin: 4px; cursor: pointer; }
+        .suggestion-chip { background: rgba(108,62,255,0.3); border-radius: 40px; padding: 5px 12px; font-size: 0.7rem; cursor: pointer; transition: 0.1s; }
+        .suggestion-chip:active { background: #6c3eff; color:white; }
         @media (max-width: 500px) { .page { padding: 14px; } .finance-amount { font-size: 1.3rem; } }
     </style>
 </head>
@@ -59,7 +61,7 @@
         </div>
     </div>
 
-    <!-- DASHBOARD AVEC SELECTEUR MENSUEL -->
+    <!-- DASHBOARD -->
     <div id="dashboardPage" class="page">
         <div class="header-app"><span class="logo">AI.MG</span><button id="logoutBtn" class="gradient-btn" style="padding: 6px 16px; background:#d9534f;">Déco</button></div>
         <div class="month-selector" style="justify-content: center;">
@@ -82,20 +84,22 @@
         </div>
     </div>
 
-    <!-- FACTURATION MENSUELLE -->
+    <!-- FACTURATION AVEC BONNES CATÉGORIES -->
     <div id="facturationPage" class="page">
         <div class="header-app"><button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button><span class="logo">Factures</span><div></div></div>
         <div class="card">
             <div class="month-selector" style="justify-content: space-between;"><span>Mois</span><select id="factMonthSelect"></select></div>
             <div class="cat-grid" id="catContainer"></div>
-            <div style="display: flex; gap: 8px;"><input type="text" id="expenseName" placeholder="Nom"><input type="number" id="expenseAmount" placeholder="Montant"><button id="addExpenseBtn" class="gradient-btn">+</button></div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;"><input type="text" id="expenseName" placeholder="Nom dépense" style="flex:2"><input type="number" id="expenseAmount" placeholder="Montant" style="flex:1"><button id="addExpenseBtn" class="gradient-btn">+</button></div>
+            <!-- Suggestions spécifiques à la catégorie active -->
+            <div id="suggestionsBar" class="cat-grid" style="margin-top: 5px;"></div>
             <div id="expenseList" style="margin-top: 16px;"></div>
             <div style="margin-top: 16px; text-align:center; font-weight:bold;" id="totalMonthly"></div>
             <button id="monthlyResetBtn" class="gradient-btn" style="margin-top:12px; background:#ff8c42;">Réinitialiser le mois</button>
         </div>
     </div>
 
-    <!-- CALENDRIER AVEC DESCRIPTION -->
+    <!-- CALENDRIER -->
     <div id="calendrierPage" class="page">
         <div class="header-app"><button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button><span class="logo">Agenda</span><div></div></div>
         <div class="card" id="calendarContainer" style="padding: 8px;"></div>
@@ -109,13 +113,13 @@
         <div id="eventListPreview" style="margin-top: 12px; max-height: 200px; overflow-y: auto;"></div>
     </div>
 
-    <!-- LOCALISATION AVEC CHAMPS CUSTOM + RECHERCHE -->
+    <!-- LOCALISATION -->
     <div id="localisationPage" class="page">
         <div class="header-app"><button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button><span class="logo">Objets & lieux</span><div></div></div>
         <div class="card">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchObjectInput" placeholder="Rechercher (nom, style, couleur, description...)"></div>
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchObjectInput" placeholder="Rechercher (nom, champ, valeur...)"></div>
             <h3 style="color:white;">➕ Ajouter un objet / lieu</h3>
-            <input type="text" id="objName" placeholder="Nom (ex: Clés, Sac, Téléphone)">
+            <input type="text" id="objName" placeholder="Nom (ex: Clés, Sac, Portefeuille)">
             <div id="dynamicFieldsContainer"></div>
             <button id="addCustomFieldBtn" class="gradient-btn" style="background:#9c27b0; margin-bottom:8px;">+ Ajouter champ personnalisé</button>
             <input type="file" id="objPhotos" accept="image/*" multiple>
@@ -138,12 +142,11 @@
 </div>
 
 <script>
-    // Structure données : tout est mensualisé (salaire, dépenses, events, projects, objects)
+    // ---------- STOCKAGE MENSUEL ----------
     let currentUser = null;
     let users = JSON.parse(localStorage.getItem('aiMg_users')) || {};
-    // Données mensuelles: { user: { "2025_3": { salary, expenses:{cat:[]}, events:[], projects:[], objects:[] } } }
     let monthlyData = JSON.parse(localStorage.getItem('aiMg_monthly')) || {};
-    let currentDisplayMonth = new Date().getMonth(); // 0-11
+    let currentDisplayMonth = new Date().getMonth();
 
     function getMonthKey(year=2025, month) { return `${year}_${month}`; }
     function getCurrentMonthKey() { return getMonthKey(2025, currentDisplayMonth); }
@@ -192,10 +195,12 @@
         if(document.getElementById('factMonthSelect')) document.getElementById('factMonthSelect').value = month;
         if(document.getElementById('expenseList')) renderExpenses();
         if(document.getElementById('totalMonthly')) updateFacturationUI();
+        if(document.getElementById('suggestionsBar')) updateSuggestions();
     }
 
-    // FACTURATION (catégories enrichies)
-    const categoryItems = {
+    // ---------- FACTURATION : CATÉGORIES CORRECTES ----------
+    // Chaque catégorie avec ses propres éléments fixes (pas de mélange)
+    const categorySpecificItems = {
         "Charges fixes": ["JIRAMA", "Loyer", "WIFI", "Crédit téléphone"],
         "Éducation": ["Écolage", "Transport scolaire", "Fournitures", "Cantine", "Gouter"],
         "Alimentation/repas": ["Courses", "Repas quotidien"],
@@ -204,59 +209,129 @@
         "Shopping": ["Vêtements"],
         "Imprévus": []
     };
-    for(let cat in categoryItems) { if(cat !== "Imprévus") categoryItems[cat].push("Autre"); else categoryItems[cat] = ["Autre"]; }
+    // Ajouter "Autre" à chaque catégorie sauf Imprévus (qui n'a que "Autre")
+    for(let cat in categorySpecificItems) {
+        if(cat !== "Imprévus") categorySpecificItems[cat].push("Autre");
+        else categorySpecificItems[cat] = ["Autre"];
+    }
     let activeCat = "Charges fixes";
+
     function renderCategories() {
         let container = document.getElementById('catContainer');
         if(!container) return;
-        container.innerHTML = Object.keys(categoryItems).map(cat => `<div class="cat-btn ${activeCat===cat?'cat-active':''}" data-cat="${cat}">${cat}</div>`).join('');
-        document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => { activeCat = btn.dataset.cat; renderCategories(); renderExpenses(); }));
+        container.innerHTML = Object.keys(categorySpecificItems).map(cat => `<div class="cat-btn ${activeCat===cat?'cat-active':''}" data-cat="${cat}">${cat}</div>`).join('');
+        document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => {
+            activeCat = btn.dataset.cat;
+            renderCategories();
+            renderExpenses();
+            updateSuggestions();
+        }));
     }
+
+    // Affiche les suggestions (boutons rapides) selon la catégorie active
+    function updateSuggestions() {
+        let suggestionsDiv = document.getElementById('suggestionsBar');
+        if(!suggestionsDiv) return;
+        let items = categorySpecificItems[activeCat] || [];
+        suggestionsDiv.innerHTML = items.map(item => `<div class="suggestion-chip" data-suggest="${item}">➕ ${item}</div>`).join('');
+        document.querySelectorAll('.suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                let suggest = chip.dataset.suggest;
+                let finalName = suggest;
+                if(suggest === "Autre") {
+                    finalName = prompt("Nom de la dépense (ex: Achat divers) :");
+                    if(!finalName) return;
+                }
+                let montant = prompt(`Montant pour ${finalName} (Ar) :`);
+                if(montant && !isNaN(parseFloat(montant))) {
+                    let monthData = getUserMonthData();
+                    if(!monthData.expenses[activeCat]) monthData.expenses[activeCat] = [];
+                    monthData.expenses[activeCat].push({ name: finalName, amount: parseFloat(montant) });
+                    saveMonthly();
+                    renderExpenses();
+                    updateDashboardUI();
+                }
+            });
+        });
+    }
+
     function renderExpenses() {
         let monthData = getUserMonthData();
         if(!monthData) return;
         let catExpenses = monthData.expenses[activeCat] || [];
         let listDiv = document.getElementById('expenseList');
+        if(!listDiv) return;
         listDiv.innerHTML = catExpenses.map((exp, idx) => `<div class="expense-item"><span><strong>${escapeHtml(exp.name)}</strong> : ${Number(exp.amount).toLocaleString()} Ar</span><div><button class="editExpense" data-idx="${idx}"><i class="fas fa-edit"></i></button><button class="delExpense" data-idx="${idx}"><i class="fas fa-trash"></i></button></div></div>`).join('');
-        document.querySelectorAll('.editExpense').forEach(btn => btn.addEventListener('click', () => { let idx = btn.dataset.idx; let newName = prompt("Nouveau nom", catExpenses[idx].name); let newAmount = prompt("Montant", catExpenses[idx].amount); if(newName && newAmount && !isNaN(newAmount)) { catExpenses[idx] = {name: newName, amount: Number(newAmount)}; monthData.expenses[activeCat] = catExpenses; saveMonthly(); renderExpenses(); updateDashboardUI(); } }));
-        document.querySelectorAll('.delExpense').forEach(btn => btn.addEventListener('click', () => { let idx = btn.dataset.idx; catExpenses.splice(idx,1); monthData.expenses[activeCat] = catExpenses; saveMonthly(); renderExpenses(); updateDashboardUI(); }));
+        document.querySelectorAll('.editExpense').forEach(btn => btn.addEventListener('click', () => {
+            let idx = btn.dataset.idx;
+            let newName = prompt("Nouveau nom", catExpenses[idx].name);
+            let newAmount = prompt("Montant", catExpenses[idx].amount);
+            if(newName && newAmount && !isNaN(newAmount)) {
+                catExpenses[idx] = { name: newName, amount: Number(newAmount) };
+                monthData.expenses[activeCat] = catExpenses;
+                saveMonthly();
+                renderExpenses();
+                updateDashboardUI();
+            }
+        }));
+        document.querySelectorAll('.delExpense').forEach(btn => btn.addEventListener('click', () => {
+            let idx = btn.dataset.idx;
+            catExpenses.splice(idx,1);
+            monthData.expenses[activeCat] = catExpenses;
+            saveMonthly();
+            renderExpenses();
+            updateDashboardUI();
+        }));
         updateFacturationUI();
     }
-    function updateFacturationUI() { let total = getTotalExpensesForMonth(getUserMonthData()); document.getElementById('totalMonthly').innerHTML = `💰 Total mensuel: ${total.toLocaleString()} Ar`; }
-    function initFacturation() {
-        renderCategories(); renderExpenses();
-        document.getElementById('addExpenseBtn').onclick = () => {
-            let name = document.getElementById('expenseName').value.trim(); let amount = parseFloat(document.getElementById('expenseAmount').value);
-            if(!name || isNaN(amount)) return alert("Nom et montant valide");
-            let monthData = getUserMonthData();
-            if(!monthData.expenses[activeCat]) monthData.expenses[activeCat] = [];
-            monthData.expenses[activeCat].push({name, amount});
-            saveMonthly(); renderExpenses(); updateDashboardUI();
-            document.getElementById('expenseName').value = ''; document.getElementById('expenseAmount').value = '';
-        };
-        document.getElementById('monthlyResetBtn').onclick = () => { if(confirm("Reset toutes dépenses du mois ?")) { getUserMonthData().expenses = {}; saveMonthly(); renderExpenses(); updateDashboardUI(); } };
-        // Suggestions rapides
-        setTimeout(() => {
-            let suggestionDiv = document.createElement('div'); suggestionDiv.className = 'cat-grid'; suggestionDiv.id = 'suggestionChips';
-            let container = document.querySelector('#facturationPage .card'); let old = document.getElementById('suggestionChips'); if(old) old.remove();
-            container.insertBefore(suggestionDiv, document.getElementById('expenseList'));
-            let items = categoryItems[activeCat] || [];
-            suggestionDiv.innerHTML = items.map(item => `<div class="cat-btn" data-suggest="${item}">➕ ${item}</div>`).join('');
-            document.querySelectorAll('[data-suggest]').forEach(btn => btn.addEventListener('click', () => {
-                let suggest = btn.dataset.suggest; let finalName = suggest === "Autre" ? prompt("Nom de la dépense:") : suggest;
-                if(finalName) { let montant = prompt(`Montant pour ${finalName} (Ar):`); if(montant && !isNaN(parseFloat(montant))) { let monthData = getUserMonthData(); if(!monthData.expenses[activeCat]) monthData.expenses[activeCat] = []; monthData.expenses[activeCat].push({name: finalName, amount: parseFloat(montant)}); saveMonthly(); renderExpenses(); updateDashboardUI(); } }
-            }));
-        }, 100);
+
+    function updateFacturationUI() {
+        let total = getTotalExpensesForMonth(getUserMonthData());
+        let totalDiv = document.getElementById('totalMonthly');
+        if(totalDiv) totalDiv.innerHTML = `💰 Total mensuel: ${total.toLocaleString()} Ar`;
     }
 
-    // CALENDRIER AVEC DESCRIPTION
+    function initFacturation() {
+        renderCategories();
+        renderExpenses();
+        updateSuggestions();
+        document.getElementById('addExpenseBtn').onclick = () => {
+            let name = document.getElementById('expenseName').value.trim();
+            let amount = parseFloat(document.getElementById('expenseAmount').value);
+            if(!name || isNaN(amount)) return alert("Nom et montant valides");
+            let monthData = getUserMonthData();
+            if(!monthData.expenses[activeCat]) monthData.expenses[activeCat] = [];
+            monthData.expenses[activeCat].push({ name, amount });
+            saveMonthly();
+            renderExpenses();
+            updateDashboardUI();
+            document.getElementById('expenseName').value = '';
+            document.getElementById('expenseAmount').value = '';
+        };
+        document.getElementById('monthlyResetBtn').onclick = () => {
+            if(confirm("⚠️ Réinitialiser toutes les dépenses du mois ?")) {
+                getUserMonthData().expenses = {};
+                saveMonthly();
+                renderExpenses();
+                updateDashboardUI();
+            }
+        };
+    }
+
+    // ---------- CALENDRIER ----------
     let calendar = null;
     function initCalendar() {
         let monthData = getUserMonthData();
         let evts = (monthData.events || []).map(ev => ({ title: ev.title, start: ev.date, description: ev.desc, allDay: false }));
         const calEl = document.getElementById('calendarContainer');
         if(calendar) calendar.destroy();
-        calendar = new FullCalendar.Calendar(calEl, { initialView: 'dayGridMonth', events: evts, headerToolbar: { left: 'prev,next', center: 'title', right: 'dayGridMonth' }, height: 'auto', eventClick: (info) => { alert(`📌 ${info.event.title}\n📅 ${info.event.start}\n📝 Description: ${info.event.extendedProps.description || 'Aucune'}`); } });
+        calendar = new FullCalendar.Calendar(calEl, {
+            initialView: 'dayGridMonth',
+            events: evts,
+            headerToolbar: { left: 'prev,next', center: 'title', right: 'dayGridMonth' },
+            height: 'auto',
+            eventClick: (info) => { alert(`📌 ${info.event.title}\n📅 ${info.event.start}\n📝 Description: ${info.event.extendedProps.description || 'Aucune'}`); }
+        });
         calendar.render();
         document.getElementById('addEventBtn').onclick = () => {
             let title = document.getElementById('eventTitle').value.trim();
@@ -264,10 +339,13 @@
             let desc = document.getElementById('eventDesc').value.trim().slice(0, 1500);
             if(!title || !date) return alert("Titre et date requis");
             monthData.events.push({ title, date, desc: desc || "" });
-            saveMonthly(); initCalendar();
+            saveMonthly();
+            initCalendar();
             if(Notification.permission === "granted") new Notification("AI.MG", { body: title });
             else alert(`🔔 Événement: ${title}`);
-            document.getElementById('eventTitle').value = ''; document.getElementById('eventDate').value = ''; document.getElementById('eventDesc').value = '';
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventDesc').value = '';
             displayEventList();
         };
         displayEventList();
@@ -278,11 +356,12 @@
         if(listDiv) listDiv.innerHTML = `<div style="color:white;">📋 Événements récents:</div>` + (monthData.events.slice(-5).reverse().map(ev => `<div style="background:rgba(255,255,255,0.2); border-radius:20px; padding:8px; margin:5px 0;"><b>${escapeHtml(ev.title)}</b> - ${ev.date}<br><small>${escapeHtml(ev.desc?.substring(0,80))}${ev.desc?.length>80?'...':''}</small></div>`).join(''));
     }
 
-    // LOCALISATION : champs dynamiques + recherche
-    let customFields = []; // stockage [{label, value}] pour le formulaire
+    // ---------- LOCALISATION (champs personnalisables) ----------
+    let customFields = [];
     function renderDynamicFields() {
         let container = document.getElementById('dynamicFieldsContainer');
-        container.innerHTML = customFields.map((field, idx) => `<div style="display:flex; gap:6px; margin-bottom:8px;"><input type="text" placeholder="Nom du champ (ex: Customer)" value="${escapeHtml(field.label)}" id="fieldLabel_${idx}"><input type="text" placeholder="Valeur (ex: JCREW)" value="${escapeHtml(field.value)}" id="fieldValue_${idx}"><button class="removeFieldBtn" data-idx="${idx}">❌</button></div>`).join('');
+        if(!container) return;
+        container.innerHTML = customFields.map((field, idx) => `<div style="display:flex; gap:6px; margin-bottom:8px;"><input type="text" placeholder="Nom champ (ex: Customer)" value="${escapeHtml(field.label)}" id="fieldLabel_${idx}"><input type="text" placeholder="Valeur (ex: JCREW)" value="${escapeHtml(field.value)}" id="fieldValue_${idx}"><button class="removeFieldBtn" data-idx="${idx}">❌</button></div>`).join('');
         document.querySelectorAll('.removeFieldBtn').forEach(btn => btn.addEventListener('click', (e) => { let idx = btn.dataset.idx; customFields.splice(idx,1); renderDynamicFields(); }));
     }
     function initLocalisation() {
@@ -321,7 +400,7 @@
         document.querySelectorAll('.deleteObj').forEach(btn => btn.addEventListener('click', (e) => { let id = Number(btn.dataset.id); let monthData = getUserMonthData(); monthData.objects = monthData.objects.filter(o=>o.id!==id); saveMonthly(); renderObjectsList(); }));
     }
 
-    // PROJETS (mensualisés)
+    // ---------- PROJETS ----------
     function renderProjects() {
         let monthData = getUserMonthData();
         let projs = monthData.projects || [];
@@ -364,14 +443,15 @@
         if(pageId === 'projetPage') initProjets();
         if(pageId === 'dashboardPage') { updateDashboardUI(); document.getElementById('saveSalaryBtn').onclick = saveSalaryForMonth; document.getElementById('monthSelector').onchange = (e) => changeMonth(e.target.value); document.getElementById('monthSelector').value = currentDisplayMonth; }
     }
+
     // AUTH
     function register() {
         let email = document.getElementById('email').value.trim(); let pwd = document.getElementById('password').value;
-        if(!email || !pwd) return document.getElementById('authMessage').innerText="Email & mot de passe";
+        if(!email || !pwd) return document.getElementById('authMessage').innerText="Email & mot de passe requis";
         if(users[email]) return document.getElementById('authMessage').innerText="Déjà inscrit";
         users[email] = { email, password:pwd, phone:document.getElementById('phone').value };
         currentUser = email; monthlyData[currentUser] = {};
-        saveMonthly(); saveMonthly(); 
+        saveMonthly();
         showPage('dashboardPage');
     }
     function login() {
@@ -386,8 +466,15 @@
     document.querySelectorAll('.dashboard-card').forEach(card=>card.addEventListener('click',()=>showPage(card.dataset.nav+'Page')));
     if(Notification.permission!=="granted") Notification.requestPermission();
     if(currentUser) showPage('dashboardPage'); else showPage('loginPage');
-    // synchronisation facturation selecteur mois
-    setInterval(()=>{ if(document.getElementById('factMonthSelect')) { document.getElementById('factMonthSelect').innerHTML = [...Array(12)].map((_,i)=>`<option value="${i}" ${currentDisplayMonth==i?'selected':''}>${["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Aoû","Sep","Oct","Nov","Déc"][i]}</option>`).join(''); document.getElementById('factMonthSelect').onchange = (e)=>{ currentDisplayMonth=parseInt(e.target.value); if(document.getElementById('monthSelector')) document.getElementById('monthSelector').value=currentDisplayMonth; updateDashboardUI(); renderExpenses(); }; } }, 500);
+    
+    // Sync month selector in facturation page
+    setInterval(()=>{
+        let factSelect = document.getElementById('factMonthSelect');
+        if(factSelect) {
+            factSelect.innerHTML = [...Array(12)].map((_,i)=>`<option value="${i}" ${currentDisplayMonth==i?'selected':''}>${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][i]}</option>`).join('');
+            factSelect.onchange = (e)=>{ currentDisplayMonth=parseInt(e.target.value); if(document.getElementById('monthSelector')) document.getElementById('monthSelector').value=currentDisplayMonth; updateDashboardUI(); renderExpenses(); updateSuggestions(); };
+        }
+    }, 500);
 </script>
 </body>
 </html>
