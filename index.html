@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>AI.MG - Gestion Mensuelle 3D</title>
+    <title>AI.MG - Gestion Personnelle Cloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: radial-gradient(circle at 10% 30%, #1a1a2e, #0f0f1a); min-height: 100vh; padding: 16px; }
@@ -18,6 +22,7 @@
         .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-radius: 32px; padding: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); }
         .gradient-btn { background: linear-gradient(135deg, #a06eff, #6c3eff); border: none; color: white; padding: 12px 20px; border-radius: 60px; font-weight: 600; cursor: pointer; transition: 0.2s; box-shadow: 0 6px 14px rgba(108,62,255,0.3); }
         .gradient-btn:active { transform: scale(0.96); }
+        .gradient-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         input, select, textarea { background: rgba(255,255,255,0.9); border: none; border-radius: 60px; padding: 12px 18px; width: 100%; margin-bottom: 12px; font-size: 0.9rem; }
         textarea { border-radius: 24px; resize: vertical; }
         .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
@@ -40,30 +45,56 @@
         .photo-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 16px; margin: 4px; cursor: pointer; }
         .suggestion-chip { background: rgba(108,62,255,0.3); border-radius: 40px; padding: 5px 12px; font-size: 0.7rem; cursor: pointer; transition: 0.1s; }
         .suggestion-chip:active { background: #6c3eff; color:white; }
+        .loading { text-align: center; color: white; padding: 20px; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 40px; z-index: 1000; animation: fadeOut 3s ease forwards; }
+        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
         @media (max-width: 500px) { .page { padding: 14px; } .finance-amount { font-size: 1.3rem; } }
     </style>
 </head>
 <body>
 <div class="app-container">
-    <!-- LOGIN -->
+    <!-- PAGE LOGIN / INSCRIPTION -->
     <div id="loginPage" class="page active-page">
         <div class="card" style="margin-top: 40px;">
             <div class="logo" style="text-align: center;">AI.MG</div>
             <h2 style="text-align: center; margin: 20px 0; color:white;">Bienvenue</h2>
-            <input type="email" id="email" placeholder="Email *">
-            <input type="password" id="password" placeholder="Mot de passe *">
-            <input type="tel" id="phone" placeholder="Téléphone">
-            <div style="display: flex; gap: 12px;">
-                <button id="signupBtn" class="gradient-btn">S'inscrire</button>
-                <button id="signinBtn" class="gradient-btn" style="background:linear-gradient(135deg,#3a86ff,#2666cc);">Connexion</button>
+            <div id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email *">
+                <input type="password" id="loginPassword" placeholder="Mot de passe *">
+                <div style="display: flex; gap: 12px;">
+                    <button id="signinBtn" class="gradient-btn">Se connecter</button>
+                    <button id="showRegisterBtn" class="gradient-btn" style="background:linear-gradient(135deg,#3a86ff,#2666cc);">S'inscrire</button>
+                </div>
+                <div style="text-align:center; margin-top:15px;"><a href="#" id="forgotPwdBtn" style="color:#c7b9ff;">Mot de passe oublié ?</a></div>
+            </div>
+            <div id="registerForm" style="display:none;">
+                <input type="email" id="regEmail" placeholder="Email *">
+                <input type="password" id="regPassword" placeholder="Mot de passe * (min 6)">
+                <input type="tel" id="regPhone" placeholder="Téléphone (+261...)">
+                <div style="display: flex; gap: 12px;">
+                    <button id="registerBtn" class="gradient-btn">S'inscrire</button>
+                    <button id="showLoginBtn" class="gradient-btn" style="background:linear-gradient(135deg,#6c3eff,#a06eff);">Retour</button>
+                </div>
             </div>
             <div id="authMessage" style="margin-top: 12px; text-align: center; color:#ffb4a2;"></div>
         </div>
     </div>
 
+    <!-- PAGE VÉRIFICATION EMAIL -->
+    <div id="verifyPage" class="page">
+        <div class="card" style="text-align: center;">
+            <i class="fas fa-envelope" style="font-size: 60px; color: #ffd966; margin-bottom: 20px;"></i>
+            <h2 style="color: white;">Vérification email requise</h2>
+            <p style="color: #ccc; margin: 20px 0;">Un email de vérification a été envoyé à <span id="verifyEmailSpan"></span></p>
+            <p style="color: #ccc; margin-bottom: 20px;">Veuillez cliquer sur le lien dans l'email pour activer votre compte.</p>
+            <button id="resendVerifyBtn" class="gradient-btn">Renvoyer l'email</button>
+            <button id="logoutFromVerifyBtn" class="gradient-btn" style="margin-top: 12px; background:#d9534f;">Retour à la connexion</button>
+        </div>
+    </div>
+
     <!-- DASHBOARD -->
     <div id="dashboardPage" class="page">
-        <div class="header-app"><span class="logo">AI.MG</span><button id="logoutBtn" class="gradient-btn" style="padding: 6px 16px; background:#d9534f;">Déco</button></div>
+        <div class="header-app"><span class="logo">AI.MG</span><button id="logoutBtn" class="gradient-btn" style="padding: 6px 16px; background:#d9534f;">Déconnexion</button></div>
         <div class="month-selector" style="justify-content: center;">
             <i class="fas fa-calendar-alt" style="color:white;"></i>
             <select id="monthSelector" style="width: auto; background: rgba(0,0,0,0.6); color:white; margin:0;">
@@ -84,14 +115,13 @@
         </div>
     </div>
 
-    <!-- FACTURATION AVEC BONNES CATÉGORIES -->
+    <!-- FACTURATION -->
     <div id="facturationPage" class="page">
         <div class="header-app"><button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button><span class="logo">Factures</span><div></div></div>
         <div class="card">
             <div class="month-selector" style="justify-content: space-between;"><span>Mois</span><select id="factMonthSelect"></select></div>
             <div class="cat-grid" id="catContainer"></div>
             <div style="display: flex; gap: 8px; flex-wrap: wrap;"><input type="text" id="expenseName" placeholder="Nom dépense" style="flex:2"><input type="number" id="expenseAmount" placeholder="Montant" style="flex:1"><button id="addExpenseBtn" class="gradient-btn">+</button></div>
-            <!-- Suggestions spécifiques à la catégorie active -->
             <div id="suggestionsBar" class="cat-grid" style="margin-top: 5px;"></div>
             <div id="expenseList" style="margin-top: 16px;"></div>
             <div style="margin-top: 16px; text-align:center; font-weight:bold;" id="totalMonthly"></div>
@@ -117,11 +147,11 @@
     <div id="localisationPage" class="page">
         <div class="header-app"><button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button><span class="logo">Objets & lieux</span><div></div></div>
         <div class="card">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchObjectInput" placeholder="Rechercher (nom, champ, valeur...)"></div>
-            <h3 style="color:white;">➕ Ajouter un objet / lieu</h3>
-            <input type="text" id="objName" placeholder="Nom (ex: Clés, Sac, Portefeuille)">
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchObjectInput" placeholder="Rechercher..."></div>
+            <h3 style="color:white;">➕ Ajouter un objet</h3>
+            <input type="text" id="objName" placeholder="Nom (ex: Clés, Sac)">
             <div id="dynamicFieldsContainer"></div>
-            <button id="addCustomFieldBtn" class="gradient-btn" style="background:#9c27b0; margin-bottom:8px;">+ Ajouter champ personnalisé</button>
+            <button id="addCustomFieldBtn" class="gradient-btn" style="background:#9c27b0; margin-bottom:8px;">+ Ajouter champ</button>
             <input type="file" id="objPhotos" accept="image/*" multiple>
             <button id="saveObjectBtn" class="gradient-btn" style="margin-top:12px;">💾 Sauvegarder</button>
             <div id="objectsList" style="margin-top: 20px;"></div>
@@ -142,64 +172,32 @@
 </div>
 
 <script>
-    // ---------- STOCKAGE MENSUEL ----------
-    let currentUser = null;
-    let users = JSON.parse(localStorage.getItem('aiMg_users')) || {};
-    let monthlyData = JSON.parse(localStorage.getItem('aiMg_monthly')) || {};
-    let currentDisplayMonth = new Date().getMonth();
-
-    function getMonthKey(year=2025, month) { return `${year}_${month}`; }
-    function getCurrentMonthKey() { return getMonthKey(2025, currentDisplayMonth); }
-    function getUserMonthData() {
-        if(!currentUser) return null;
-        let key = getCurrentMonthKey();
-        if(!monthlyData[currentUser]) monthlyData[currentUser] = {};
-        if(!monthlyData[currentUser][key]) {
-            monthlyData[currentUser][key] = { salary: 0, expenses: {}, events: [], projects: [], objects: [] };
-        }
-        return monthlyData[currentUser][key];
-    }
-    function saveMonthly() { localStorage.setItem('aiMg_monthly', JSON.stringify(monthlyData)); }
+    // ==================== CONFIGURATION FIREBASE ====================
+    // REMPLACEZ CES VALEURS PAR CELLES DE VOTRE PROJET FIREBASE
+    const firebaseConfig = {
+        apiKey: "VOTRE_API_KEY",
+        authDomain: "VOTRE_PROJECT.firebaseapp.com",
+        projectId: "VOTRE_PROJECT_ID",
+        storageBucket: "VOTRE_PROJECT.firebasestorage.app",
+        messagingSenderId: "VOTRE_SENDER_ID",
+        appId: "VOTRE_APP_ID"
+    };
     
-    function getTotalExpensesForMonth(monthData) {
-        let total = 0;
-        for(let cat in monthData.expenses) {
-            (monthData.expenses[cat] || []).forEach(e => total += Number(e.amount) || 0);
-        }
-        return total;
-    }
-    function updateDashboardUI() {
-        let monthData = getUserMonthData();
-        if(!monthData) return;
-        let salary = monthData.salary || 0;
-        let depenses = getTotalExpensesForMonth(monthData);
-        let epargne = salary - depenses;
-        document.getElementById('salaryDisplay').innerHTML = salary.toLocaleString() + ' Ar';
-        document.getElementById('savingDisplay').innerHTML = epargne.toLocaleString() + ' Ar';
-        document.getElementById('savingDetail').innerHTML = `Salaire: ${salary.toLocaleString()} Ar | Dépenses: ${depenses.toLocaleString()} Ar`;
-        let salaryInput = document.getElementById('monthlySalaryInput');
-        if(salaryInput) salaryInput.value = salary;
-    }
-    function saveSalaryForMonth() {
-        let newSalary = parseFloat(document.getElementById('monthlySalaryInput').value);
-        if(isNaN(newSalary)) newSalary = 0;
-        let monthData = getUserMonthData();
-        monthData.salary = newSalary;
-        saveMonthly();
-        updateDashboardUI();
-        if(document.getElementById('totalMonthly')) updateFacturationUI();
-    }
-    function changeMonth(month) {
-        currentDisplayMonth = parseInt(month);
-        updateDashboardUI();
-        if(document.getElementById('factMonthSelect')) document.getElementById('factMonthSelect').value = month;
-        if(document.getElementById('expenseList')) renderExpenses();
-        if(document.getElementById('totalMonthly')) updateFacturationUI();
-        if(document.getElementById('suggestionsBar')) updateSuggestions();
-    }
-
-    // ---------- FACTURATION : CATÉGORIES CORRECTES ----------
-    // Chaque catégorie avec ses propres éléments fixes (pas de mélange)
+    // Initialisation Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    
+    // Activer la persistance (connexion hors ligne)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    
+    // Variables globales
+    let currentUser = null;
+    let currentDisplayMonth = new Date().getMonth();
+    let calendar = null;
+    let customFields = [];
+    
+    // Catégories de facturation
     const categorySpecificItems = {
         "Charges fixes": ["JIRAMA", "Loyer", "WIFI", "Crédit téléphone"],
         "Éducation": ["Écolage", "Transport scolaire", "Fournitures", "Cantine", "Gouter"],
@@ -209,15 +207,270 @@
         "Shopping": ["Vêtements"],
         "Imprévus": []
     };
-    // Ajouter "Autre" à chaque catégorie sauf Imprévus (qui n'a que "Autre")
     for(let cat in categorySpecificItems) {
         if(cat !== "Imprévus") categorySpecificItems[cat].push("Autre");
         else categorySpecificItems[cat] = ["Autre"];
     }
     let activeCat = "Charges fixes";
-
+    
+    // Helper : afficher un toast
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.style.background = isError ? 'rgba(220,53,69,0.9)' : 'rgba(0,0,0,0.8)';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+    
+    // ==================== AUTHENTIFICATION FIREBASE ====================
+    
+    // Inscription
+    async function register() {
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const phone = document.getElementById('regPhone').value.trim();
+        
+        if(!email || !password) {
+            showToast("Email et mot de passe requis", true);
+            return;
+        }
+        if(password.length < 6) {
+            showToast("Mot de passe minimum 6 caractères", true);
+            return;
+        }
+        
+        try {
+            const userCred = await auth.createUserWithEmailAndPassword(email, password);
+            const user = userCred.user;
+            
+            // Mise à jour du téléphone
+            if(phone) {
+                await user.updateProfile({ phoneNumber: phone });
+            }
+            
+            // Envoi email de vérification
+            await user.sendEmailVerification();
+            
+            // Création du document utilisateur dans Firestore
+            await db.collection('users').doc(user.uid).set({
+                email: email,
+                phoneNumber: phone,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                emailVerified: false
+            });
+            
+            // Création des sous-collections vides
+            await db.collection('users').doc(user.uid).collection('profile').doc('info').set({
+                displayName: email.split('@')[0],
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            showToast("Compte créé ! Vérifiez votre email.");
+            
+            // Déconnexion temporaire pour forcer la vérification
+            await auth.signOut();
+            document.getElementById('verifyEmailSpan').textContent = email;
+            showPage('verifyPage');
+            
+        } catch(e) {
+            let msg = e.message;
+            if(msg.includes('email-already-in-use')) msg = "Cet email est déjà utilisé";
+            showToast(msg, true);
+        }
+    }
+    
+    // Connexion
+    async function login() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        
+        if(!email || !password) {
+            showToast("Email et mot de passe requis", true);
+            return;
+        }
+        
+        try {
+            const userCred = await auth.signInWithEmailAndPassword(email, password);
+            const user = userCred.user;
+            
+            // Vérifier si l'email est validé
+            await user.reload();
+            if(!user.emailVerified) {
+                await auth.signOut();
+                document.getElementById('verifyEmailSpan').textContent = email;
+                showPage('verifyPage');
+                showToast("Veuillez vérifier votre email avant de vous connecter", true);
+                return;
+            }
+            
+            // Mise à jour Firestore
+            await db.collection('users').doc(user.uid).update({
+                emailVerified: true,
+                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            currentUser = user;
+            showToast("Connexion réussie !");
+            showPage('dashboardPage');
+            loadAllData();
+            
+        } catch(e) {
+            let msg = e.message;
+            if(msg.includes('user-not-found')) msg = "Compte inexistant";
+            else if(msg.includes('wrong-password')) msg = "Mot de passe incorrect";
+            else if(msg.includes('invalid-email')) msg = "Email invalide";
+            showToast(msg, true);
+        }
+    }
+    
+    // Renvoyer email de vérification
+    async function resendVerification() {
+        try {
+            const user = auth.currentUser;
+            if(user) {
+                await user.sendEmailVerification();
+                showToast("Email de vérification renvoyé !");
+            }
+        } catch(e) {
+            showToast("Erreur: " + e.message, true);
+        }
+    }
+    
+    // Mot de passe oublié
+    async function resetPassword() {
+        const email = prompt("Entrez votre email pour réinitialiser votre mot de passe :");
+        if(email && email.includes('@')) {
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showToast("Email de réinitialisation envoyé !");
+            } catch(e) {
+                showToast("Email non trouvé", true);
+            }
+        } else if(email) {
+            showToast("Email invalide", true);
+        }
+    }
+    
+    // Déconnexion
+    async function logout() {
+        await auth.signOut();
+        currentUser = null;
+        showPage('loginPage');
+        showToast("Déconnecté");
+    }
+    
+    // ==================== FIRESTORE CRUD ====================
+    
+    function getMonthKey() { return `2025_${currentDisplayMonth}`; }
+    function getUserDocRef() { return db.collection('users').doc(currentUser.uid); }
+    function getMonthDocRef() { return getUserDocRef().collection('months').doc(getMonthKey()); }
+    
+    async function loadMonthData() {
+        const doc = await getMonthDocRef().get();
+        if(doc.exists) return doc.data();
+        return { salary: 0, expenses: {}, events: [], projects: [], objects: [] };
+    }
+    
+    async function saveMonthData(data) {
+        await getMonthDocRef().set(data, { merge: true });
+    }
+    
+    async function getTotalExpenses() {
+        const data = await loadMonthData();
+        let total = 0;
+        for(let cat in data.expenses) {
+            (data.expenses[cat] || []).forEach(e => total += Number(e.amount) || 0);
+        }
+        return total;
+    }
+    
+    async function updateDashboardUI() {
+        if(!currentUser) return;
+        const data = await loadMonthData();
+        const salary = data.salary || 0;
+        const depenses = await getTotalExpenses();
+        const epargne = salary - depenses;
+        document.getElementById('salaryDisplay').innerHTML = salary.toLocaleString() + ' Ar';
+        document.getElementById('savingDisplay').innerHTML = epargne.toLocaleString() + ' Ar';
+        document.getElementById('savingDetail').innerHTML = `Salaire: ${salary.toLocaleString()} Ar | Dépenses: ${depenses.toLocaleString()} Ar`;
+        document.getElementById('monthlySalaryInput').value = salary;
+    }
+    
+    async function saveSalary() {
+        const newSalary = parseFloat(document.getElementById('monthlySalaryInput').value);
+        if(isNaN(newSalary)) return;
+        const data = await loadMonthData();
+        data.salary = newSalary;
+        await saveMonthData(data);
+        await updateDashboardUI();
+        showToast("Salaire enregistré");
+    }
+    
+    // Facturation
+    async function renderExpenses() {
+        const data = await loadMonthData();
+        const catExpenses = data.expenses[activeCat] || [];
+        const listDiv = document.getElementById('expenseList');
+        if(!listDiv) return;
+        listDiv.innerHTML = catExpenses.map((exp, idx) => `<div class="expense-item"><span><strong>${escapeHtml(exp.name)}</strong> : ${Number(exp.amount).toLocaleString()} Ar</span><div><button class="editExpense" data-idx="${idx}"><i class="fas fa-edit"></i></button><button class="delExpense" data-idx="${idx}"><i class="fas fa-trash"></i></button></div></div>`).join('');
+        
+        document.querySelectorAll('.editExpense').forEach(btn => btn.addEventListener('click', async () => {
+            const idx = btn.dataset.idx;
+            const newName = prompt("Nouveau nom", catExpenses[idx].name);
+            const newAmount = prompt("Montant", catExpenses[idx].amount);
+            if(newName && newAmount && !isNaN(newAmount)) {
+                catExpenses[idx] = { name: newName, amount: Number(newAmount) };
+                const data = await loadMonthData();
+                data.expenses[activeCat] = catExpenses;
+                await saveMonthData(data);
+                await renderExpenses();
+                await updateDashboardUI();
+            }
+        }));
+        
+        document.querySelectorAll('.delExpense').forEach(btn => btn.addEventListener('click', async () => {
+            const idx = btn.dataset.idx;
+            catExpenses.splice(idx,1);
+            const data = await loadMonthData();
+            data.expenses[activeCat] = catExpenses;
+            await saveMonthData(data);
+            await renderExpenses();
+            await updateDashboardUI();
+        }));
+        
+        const total = await getTotalExpenses();
+        document.getElementById('totalMonthly').innerHTML = `💰 Total mensuel: ${total.toLocaleString()} Ar`;
+    }
+    
+    async function addExpense() {
+        const name = document.getElementById('expenseName').value.trim();
+        const amount = parseFloat(document.getElementById('expenseAmount').value);
+        if(!name || isNaN(amount)) return showToast("Nom et montant valides", true);
+        const data = await loadMonthData();
+        if(!data.expenses[activeCat]) data.expenses[activeCat] = [];
+        data.expenses[activeCat].push({ name, amount });
+        await saveMonthData(data);
+        await renderExpenses();
+        await updateDashboardUI();
+        document.getElementById('expenseName').value = '';
+        document.getElementById('expenseAmount').value = '';
+        showToast("Dépense ajoutée");
+    }
+    
+    async function resetMonth() {
+        if(confirm("⚠️ Réinitialiser toutes les dépenses du mois ?")) {
+            const data = await loadMonthData();
+            data.expenses = {};
+            await saveMonthData(data);
+            await renderExpenses();
+            await updateDashboardUI();
+            showToast("Mois réinitialisé");
+        }
+    }
+    
     function renderCategories() {
-        let container = document.getElementById('catContainer');
+        const container = document.getElementById('catContainer');
         if(!container) return;
         container.innerHTML = Object.keys(categorySpecificItems).map(cat => `<div class="cat-btn ${activeCat===cat?'cat-active':''}" data-cat="${cat}">${cat}</div>`).join('');
         document.querySelectorAll('.cat-btn').forEach(btn => btn.addEventListener('click', () => {
@@ -227,102 +480,38 @@
             updateSuggestions();
         }));
     }
-
-    // Affiche les suggestions (boutons rapides) selon la catégorie active
-    function updateSuggestions() {
-        let suggestionsDiv = document.getElementById('suggestionsBar');
+    
+    async function updateSuggestions() {
+        const suggestionsDiv = document.getElementById('suggestionsBar');
         if(!suggestionsDiv) return;
-        let items = categorySpecificItems[activeCat] || [];
+        const items = categorySpecificItems[activeCat] || [];
         suggestionsDiv.innerHTML = items.map(item => `<div class="suggestion-chip" data-suggest="${item}">➕ ${item}</div>`).join('');
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
+            chip.addEventListener('click', async () => {
                 let suggest = chip.dataset.suggest;
                 let finalName = suggest;
                 if(suggest === "Autre") {
-                    finalName = prompt("Nom de la dépense (ex: Achat divers) :");
+                    finalName = prompt("Nom de la dépense :");
                     if(!finalName) return;
                 }
-                let montant = prompt(`Montant pour ${finalName} (Ar) :`);
+                const montant = prompt(`Montant pour ${finalName} (Ar) :`);
                 if(montant && !isNaN(parseFloat(montant))) {
-                    let monthData = getUserMonthData();
-                    if(!monthData.expenses[activeCat]) monthData.expenses[activeCat] = [];
-                    monthData.expenses[activeCat].push({ name: finalName, amount: parseFloat(montant) });
-                    saveMonthly();
-                    renderExpenses();
-                    updateDashboardUI();
+                    const data = await loadMonthData();
+                    if(!data.expenses[activeCat]) data.expenses[activeCat] = [];
+                    data.expenses[activeCat].push({ name: finalName, amount: parseFloat(montant) });
+                    await saveMonthData(data);
+                    await renderExpenses();
+                    await updateDashboardUI();
+                    showToast("Dépense ajoutée");
                 }
             });
         });
     }
-
-    function renderExpenses() {
-        let monthData = getUserMonthData();
-        if(!monthData) return;
-        let catExpenses = monthData.expenses[activeCat] || [];
-        let listDiv = document.getElementById('expenseList');
-        if(!listDiv) return;
-        listDiv.innerHTML = catExpenses.map((exp, idx) => `<div class="expense-item"><span><strong>${escapeHtml(exp.name)}</strong> : ${Number(exp.amount).toLocaleString()} Ar</span><div><button class="editExpense" data-idx="${idx}"><i class="fas fa-edit"></i></button><button class="delExpense" data-idx="${idx}"><i class="fas fa-trash"></i></button></div></div>`).join('');
-        document.querySelectorAll('.editExpense').forEach(btn => btn.addEventListener('click', () => {
-            let idx = btn.dataset.idx;
-            let newName = prompt("Nouveau nom", catExpenses[idx].name);
-            let newAmount = prompt("Montant", catExpenses[idx].amount);
-            if(newName && newAmount && !isNaN(newAmount)) {
-                catExpenses[idx] = { name: newName, amount: Number(newAmount) };
-                monthData.expenses[activeCat] = catExpenses;
-                saveMonthly();
-                renderExpenses();
-                updateDashboardUI();
-            }
-        }));
-        document.querySelectorAll('.delExpense').forEach(btn => btn.addEventListener('click', () => {
-            let idx = btn.dataset.idx;
-            catExpenses.splice(idx,1);
-            monthData.expenses[activeCat] = catExpenses;
-            saveMonthly();
-            renderExpenses();
-            updateDashboardUI();
-        }));
-        updateFacturationUI();
-    }
-
-    function updateFacturationUI() {
-        let total = getTotalExpensesForMonth(getUserMonthData());
-        let totalDiv = document.getElementById('totalMonthly');
-        if(totalDiv) totalDiv.innerHTML = `💰 Total mensuel: ${total.toLocaleString()} Ar`;
-    }
-
-    function initFacturation() {
-        renderCategories();
-        renderExpenses();
-        updateSuggestions();
-        document.getElementById('addExpenseBtn').onclick = () => {
-            let name = document.getElementById('expenseName').value.trim();
-            let amount = parseFloat(document.getElementById('expenseAmount').value);
-            if(!name || isNaN(amount)) return alert("Nom et montant valides");
-            let monthData = getUserMonthData();
-            if(!monthData.expenses[activeCat]) monthData.expenses[activeCat] = [];
-            monthData.expenses[activeCat].push({ name, amount });
-            saveMonthly();
-            renderExpenses();
-            updateDashboardUI();
-            document.getElementById('expenseName').value = '';
-            document.getElementById('expenseAmount').value = '';
-        };
-        document.getElementById('monthlyResetBtn').onclick = () => {
-            if(confirm("⚠️ Réinitialiser toutes les dépenses du mois ?")) {
-                getUserMonthData().expenses = {};
-                saveMonthly();
-                renderExpenses();
-                updateDashboardUI();
-            }
-        };
-    }
-
-    // ---------- CALENDRIER ----------
-    let calendar = null;
-    function initCalendar() {
-        let monthData = getUserMonthData();
-        let evts = (monthData.events || []).map(ev => ({ title: ev.title, start: ev.date, description: ev.desc, allDay: false }));
+    
+    // Calendrier
+    async function initCalendar() {
+        const data = await loadMonthData();
+        const evts = (data.events || []).map(ev => ({ title: ev.title, start: ev.date, description: ev.desc, allDay: false }));
         const calEl = document.getElementById('calendarContainer');
         if(calendar) calendar.destroy();
         calendar = new FullCalendar.Calendar(calEl, {
@@ -330,19 +519,19 @@
             events: evts,
             headerToolbar: { left: 'prev,next', center: 'title', right: 'dayGridMonth' },
             height: 'auto',
-            eventClick: (info) => { alert(`📌 ${info.event.title}\n📅 ${info.event.start}\n📝 Description: ${info.event.extendedProps.description || 'Aucune'}`); }
+            eventClick: (info) => { alert(`📌 ${info.event.title}\n📅 ${info.event.start}\n📝 ${info.event.extendedProps.description || 'Aucune'}`); }
         });
         calendar.render();
-        document.getElementById('addEventBtn').onclick = () => {
-            let title = document.getElementById('eventTitle').value.trim();
-            let date = document.getElementById('eventDate').value;
-            let desc = document.getElementById('eventDesc').value.trim().slice(0, 1500);
-            if(!title || !date) return alert("Titre et date requis");
-            monthData.events.push({ title, date, desc: desc || "" });
-            saveMonthly();
+        document.getElementById('addEventBtn').onclick = async () => {
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDate').value;
+            const desc = document.getElementById('eventDesc').value.trim().slice(0, 1500);
+            if(!title || !date) return showToast("Titre et date requis", true);
+            const data = await loadMonthData();
+            data.events.push({ title, date, desc: desc || "" });
+            await saveMonthData(data);
             initCalendar();
-            if(Notification.permission === "granted") new Notification("AI.MG", { body: title });
-            else alert(`🔔 Événement: ${title}`);
+            showToast("Événement ajouté");
             document.getElementById('eventTitle').value = '';
             document.getElementById('eventDate').value = '';
             document.getElementById('eventDesc').value = '';
@@ -350,131 +539,158 @@
         };
         displayEventList();
     }
-    function displayEventList() {
-        let monthData = getUserMonthData();
-        let listDiv = document.getElementById('eventListPreview');
-        if(listDiv) listDiv.innerHTML = `<div style="color:white;">📋 Événements récents:</div>` + (monthData.events.slice(-5).reverse().map(ev => `<div style="background:rgba(255,255,255,0.2); border-radius:20px; padding:8px; margin:5px 0;"><b>${escapeHtml(ev.title)}</b> - ${ev.date}<br><small>${escapeHtml(ev.desc?.substring(0,80))}${ev.desc?.length>80?'...':''}</small></div>`).join(''));
+    
+    async function displayEventList() {
+        const data = await loadMonthData();
+        const listDiv = document.getElementById('eventListPreview');
+        if(listDiv) listDiv.innerHTML = `<div style="color:white;">📋 Événements récents:</div>` + (data.events.slice(-5).reverse().map(ev => `<div style="background:rgba(255,255,255,0.2); border-radius:20px; padding:8px; margin:5px 0;"><b>${escapeHtml(ev.title)}</b> - ${ev.date}<br><small>${escapeHtml(ev.desc?.substring(0,80))}</small></div>`).join(''));
     }
-
-    // ---------- LOCALISATION (champs personnalisables) ----------
-    let customFields = [];
+    
+    // Localisation
     function renderDynamicFields() {
-        let container = document.getElementById('dynamicFieldsContainer');
-        if(!container) return;
+        const container = document.getElementById('dynamicFieldsContainer');
         container.innerHTML = customFields.map((field, idx) => `<div style="display:flex; gap:6px; margin-bottom:8px;"><input type="text" placeholder="Nom champ (ex: Customer)" value="${escapeHtml(field.label)}" id="fieldLabel_${idx}"><input type="text" placeholder="Valeur (ex: JCREW)" value="${escapeHtml(field.value)}" id="fieldValue_${idx}"><button class="removeFieldBtn" data-idx="${idx}">❌</button></div>`).join('');
-        document.querySelectorAll('.removeFieldBtn').forEach(btn => btn.addEventListener('click', (e) => { let idx = btn.dataset.idx; customFields.splice(idx,1); renderDynamicFields(); }));
+        document.querySelectorAll('.removeFieldBtn').forEach(btn => btn.addEventListener('click', (e) => { const idx = btn.dataset.idx; customFields.splice(idx,1); renderDynamicFields(); }));
     }
-    function initLocalisation() {
-        customFields = []; renderDynamicFields();
-        document.getElementById('addCustomFieldBtn').onclick = () => { if(customFields.length < 8) { customFields.push({label:"", value:""}); renderDynamicFields(); } else alert("Max 8 champs"); };
-        document.getElementById('saveObjectBtn').onclick = () => {
-            let name = document.getElementById('objName').value.trim();
-            if(!name) return alert("Nom requis");
-            let fields = [];
-            for(let i=0;i<customFields.length;i++) {
-                let lbl = document.getElementById(`fieldLabel_${i}`)?.value || "";
-                let val = document.getElementById(`fieldValue_${i}`)?.value || "";
-                if(lbl) fields.push({label: lbl, value: val});
-            }
-            let photos = [];
-            let files = document.getElementById('objPhotos').files;
-            for(let i=0;i<Math.min(files.length,5);i++) photos.push(URL.createObjectURL(files[i]));
-            let monthData = getUserMonthData();
-            monthData.objects.push({ id: Date.now(), name, customFields: fields, photos, timestamp: Date.now() });
-            saveMonthly();
-            renderObjectsList();
-            document.getElementById('objName').value = ''; customFields = []; renderDynamicFields(); document.getElementById('objPhotos').value = '';
-        };
-        renderObjectsList();
-        document.getElementById('searchObjectInput').addEventListener('input', () => renderObjectsList());
-    }
-    function renderObjectsList() {
-        let monthData = getUserMonthData();
-        let searchTerm = document.getElementById('searchObjectInput')?.value.toLowerCase() || "";
-        let filtered = (monthData.objects || []).filter(obj => {
-            let searchText = `${obj.name} ${obj.customFields.map(f=>f.label+":"+f.value).join(' ')}`.toLowerCase();
+    
+    async function renderObjectsList() {
+        const data = await loadMonthData();
+        const searchTerm = document.getElementById('searchObjectInput')?.value.toLowerCase() || "";
+        const filtered = (data.objects || []).filter(obj => {
+            const searchText = `${obj.name} ${obj.customFields.map(f=>f.label+":"+f.value).join(' ')}`.toLowerCase();
             return searchText.includes(searchTerm);
         });
-        let container = document.getElementById('objectsList');
+        const container = document.getElementById('objectsList');
         container.innerHTML = filtered.map(obj => `<div class="object-card"><div><strong>${escapeHtml(obj.name)}</strong></div>${obj.customFields.map(f=>`<div>📌 ${escapeHtml(f.label)}: ${escapeHtml(f.value)}</div>`).join('')}<div>🖼️ ${obj.photos.map(p=>`<img src="${p}" class="photo-thumb" onclick="window.open('${p}','_blank')">`).join('') || 'aucune photo'}</div><button class="deleteObj" data-id="${obj.id}">🗑️ Supprimer</button></div>`).join('');
-        document.querySelectorAll('.deleteObj').forEach(btn => btn.addEventListener('click', (e) => { let id = Number(btn.dataset.id); let monthData = getUserMonthData(); monthData.objects = monthData.objects.filter(o=>o.id!==id); saveMonthly(); renderObjectsList(); }));
+        document.querySelectorAll('.deleteObj').forEach(btn => btn.addEventListener('click', async (e) => { const id = Number(btn.dataset.id); const data = await loadMonthData(); data.objects = data.objects.filter(o=>o.id!==id); await saveMonthData(data); renderObjectsList(); showToast("Objet supprimé"); }));
     }
-
-    // ---------- PROJETS ----------
-    function renderProjects() {
-        let monthData = getUserMonthData();
-        let projs = monthData.projects || [];
-        let groups = Array(12).fill().map(()=>[]);
+    
+    async function saveObject() {
+        const name = document.getElementById('objName').value.trim();
+        if(!name) return showToast("Nom requis", true);
+        const fields = [];
+        for(let i=0;i<customFields.length;i++) {
+            const lbl = document.getElementById(`fieldLabel_${i}`)?.value || "";
+            const val = document.getElementById(`fieldValue_${i}`)?.value || "";
+            if(lbl) fields.push({label: lbl, value: val});
+        }
+        const photos = [];
+        const files = document.getElementById('objPhotos').files;
+        for(let i=0;i<Math.min(files.length,5);i++) photos.push(URL.createObjectURL(files[i]));
+        const data = await loadMonthData();
+        if(!data.objects) data.objects = [];
+        data.objects.push({ id: Date.now(), name, customFields: fields, photos });
+        await saveMonthData(data);
+        renderObjectsList();
+        document.getElementById('objName').value = '';
+        customFields = [];
+        renderDynamicFields();
+        document.getElementById('objPhotos').value = '';
+        showToast("Objet sauvegardé");
+    }
+    
+    // Projets
+    async function renderProjects() {
+        const data = await loadMonthData();
+        const projs = data.projects || [];
+        const groups = Array(12).fill().map(()=>[]);
         projs.forEach(p=>groups[p.month].push(p));
-        let html='';
-        for(let m=0;m<12;m++){ let monthName=["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Aoû","Sep","Oct","Nov","Déc"][m];
-            html+=`<div><h4 style="color:white;">${monthName} (${groups[m].length}/10)</h4>`;
-            groups[m].forEach(p=>{ html+=`<div class="expense-item"><span>📌 ${escapeHtml(p.name)} - ${p.status}</span><div><button class="toggleStatus" data-id="${p.id}">🔄</button><button class="delProj" data-id="${p.id}">🗑️</button></div></div>`; });
-            html+=`</div>`;
+        let html = '';
+        for(let m=0;m<12;m++) {
+            const monthName = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Aoû","Sep","Oct","Nov","Déc"][m];
+            html += `<div><h4 style="color:white;">${monthName} (${groups[m].length}/10)</h4>`;
+            groups[m].forEach(p => {
+                html += `<div class="expense-item"><span>📌 ${escapeHtml(p.name)} - ${p.status}</span><div><button class="toggleStatus" data-id="${p.id}">🔄</button><button class="delProj" data-id="${p.id}">🗑️</button></div></div>`;
+            });
+            html += `</div>`;
         }
         document.getElementById('projectsList').innerHTML = html;
-        document.querySelectorAll('.toggleStatus').forEach(btn=>btn.addEventListener('click',()=>{ let id=Number(btn.dataset.id); let p=monthData.projects.find(pr=>pr.id===id); if(p){ p.status=p.status==="en cours"?"terminé":"en cours"; saveMonthly(); renderProjects(); } }));
-        document.querySelectorAll('.delProj').forEach(btn=>btn.addEventListener('click',()=>{ let id=Number(btn.dataset.id); monthData.projects=monthData.projects.filter(p=>p.id!==id); saveMonthly(); renderProjects(); }));
+        document.querySelectorAll('.toggleStatus').forEach(btn => btn.addEventListener('click', async () => { const id = Number(btn.dataset.id); const data = await loadMonthData(); const p = data.projects.find(pr=>pr.id===id); if(p){ p.status = p.status==="en cours"?"terminé":"en cours"; await saveMonthData(data); renderProjects(); showToast("Statut mis à jour"); } }));
+        document.querySelectorAll('.delProj').forEach(btn => btn.addEventListener('click', async () => { const id = Number(btn.dataset.id); const data = await loadMonthData(); data.projects = data.projects.filter(p=>p.id!==id); await saveMonthData(data); renderProjects(); showToast("Projet supprimé"); }));
     }
-    function initProjets() {
+    
+    async function addProject() {
+        const name = document.getElementById('projectName').value.trim();
+        const month = parseInt(document.getElementById('projectMonth').value);
+        const status = document.getElementById('projectStatus').value;
+        if(!name) return showToast("Nom projet requis", true);
+        const data = await loadMonthData();
+        const count = (data.projects || []).filter(p=>p.month===month).length;
+        if(count>=10){ showToast("Max 10 projets ce mois", true); return; }
+        if(!data.projects) data.projects = [];
+        data.projects.push({ id: Date.now(), name, month, status });
+        await saveMonthData(data);
         renderProjects();
-        document.getElementById('addProjectBtn').onclick = () => {
-            let name = document.getElementById('projectName').value.trim();
-            let month = parseInt(document.getElementById('projectMonth').value);
-            let status = document.getElementById('projectStatus').value;
-            if(!name) return alert("Nom projet");
-            let monthData = getUserMonthData();
-            let count = monthData.projects.filter(p=>p.month===month).length;
-            if(count>=10){ alert("Max 10 projets ce mois"); return; }
-            monthData.projects.push({ id: Date.now(), name, month, status });
-            saveMonthly(); renderProjects();
-            document.getElementById('projectName').value='';
-        };
+        document.getElementById('projectName').value = '';
+        showToast("Projet ajouté");
     }
-
-    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-
+    
+    async function loadAllData() {
+        if(!currentUser) return;
+        await updateDashboardUI();
+        if(document.getElementById('expenseList')) await renderExpenses();
+        if(document.getElementById('calendarContainer')) initCalendar();
+        if(document.getElementById('objectsList')) renderObjectsList();
+        if(document.getElementById('projectsList')) renderProjects();
+    }
+    
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    
+    // Navigation
     function showPage(pageId) {
         document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page'));
         document.getElementById(pageId).classList.add('active-page');
-        if(pageId === 'facturationPage') initFacturation();
+        if(pageId === 'facturationPage') { renderCategories(); renderExpenses(); updateSuggestions(); }
         if(pageId === 'calendrierPage') initCalendar();
-        if(pageId === 'localisationPage') initLocalisation();
-        if(pageId === 'projetPage') initProjets();
-        if(pageId === 'dashboardPage') { updateDashboardUI(); document.getElementById('saveSalaryBtn').onclick = saveSalaryForMonth; document.getElementById('monthSelector').onchange = (e) => changeMonth(e.target.value); document.getElementById('monthSelector').value = currentDisplayMonth; }
+        if(pageId === 'localisationPage') { customFields = []; renderDynamicFields(); renderObjectsList(); document.getElementById('searchObjectInput').addEventListener('input', () => renderObjectsList()); }
+        if(pageId === 'projetPage') renderProjects();
+        if(pageId === 'dashboardPage') { updateDashboardUI(); document.getElementById('saveSalaryBtn').onclick = saveSalary; document.getElementById('monthSelector').onchange = async (e) => { currentDisplayMonth = parseInt(e.target.value); await updateDashboardUI(); if(document.getElementById('factMonthSelect')) document.getElementById('factMonthSelect').value = currentDisplayMonth; renderExpenses(); updateSuggestions(); }; }
     }
-
-    // AUTH
-    function register() {
-        let email = document.getElementById('email').value.trim(); let pwd = document.getElementById('password').value;
-        if(!email || !pwd) return document.getElementById('authMessage').innerText="Email & mot de passe requis";
-        if(users[email]) return document.getElementById('authMessage').innerText="Déjà inscrit";
-        users[email] = { email, password:pwd, phone:document.getElementById('phone').value };
-        currentUser = email; monthlyData[currentUser] = {};
-        saveMonthly();
-        showPage('dashboardPage');
-    }
-    function login() {
-        let email = document.getElementById('email').value.trim(); let pwd = document.getElementById('password').value;
-        if(users[email] && users[email].password === pwd) { currentUser = email; showPage('dashboardPage'); }
-        else document.getElementById('authMessage').innerText="Identifiants incorrects";
-    }
-    document.getElementById('signupBtn').onclick = register;
+    
+    // État d'authentification
+    auth.onAuthStateChanged(async (user) => {
+        if(user && user.emailVerified) {
+            currentUser = user;
+            await loadAllData();
+            showPage('dashboardPage');
+        } else if(user && !user.emailVerified) {
+            currentUser = null;
+            document.getElementById('verifyEmailSpan').textContent = user.email;
+            showPage('verifyPage');
+        } else {
+            currentUser = null;
+            showPage('loginPage');
+        }
+    });
+    
+    // Événements UI
     document.getElementById('signinBtn').onclick = login;
-    document.getElementById('logoutBtn')?.addEventListener('click', ()=>{ currentUser=null; showPage('loginPage'); });
+    document.getElementById('showRegisterBtn').onclick = () => { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'block'; document.getElementById('authMessage').innerHTML = ''; };
+    document.getElementById('showLoginBtn').onclick = () => { document.getElementById('loginForm').style.display = 'block'; document.getElementById('registerForm').style.display = 'none'; document.getElementById('authMessage').innerHTML = ''; };
+    document.getElementById('registerBtn').onclick = register;
+    document.getElementById('forgotPwdBtn').onclick = resetPassword;
+    document.getElementById('logoutBtn')?.addEventListener('click', logout);
+    document.getElementById('logoutFromVerifyBtn')?.addEventListener('click', () => { auth.signOut(); showPage('loginPage'); });
+    document.getElementById('resendVerifyBtn')?.addEventListener('click', resendVerification);
+    document.getElementById('addExpenseBtn')?.addEventListener('click', addExpense);
+    document.getElementById('monthlyResetBtn')?.addEventListener('click', resetMonth);
+    document.getElementById('addCustomFieldBtn')?.addEventListener('click', () => { if(customFields.length < 8) { customFields.push({label:"", value:""}); renderDynamicFields(); } else showToast("Max 8 champs", true); });
+    document.getElementById('saveObjectBtn')?.addEventListener('click', saveObject);
+    document.getElementById('addProjectBtn')?.addEventListener('click', addProject);
     document.querySelectorAll('[data-back]').forEach(btn=>btn.addEventListener('click',()=>showPage('dashboardPage')));
     document.querySelectorAll('.dashboard-card').forEach(card=>card.addEventListener('click',()=>showPage(card.dataset.nav+'Page')));
-    if(Notification.permission!=="granted") Notification.requestPermission();
-    if(currentUser) showPage('dashboardPage'); else showPage('loginPage');
     
-    // Sync month selector in facturation page
-    setInterval(()=>{
-        let factSelect = document.getElementById('factMonthSelect');
+    // Sync month selector in facturation
+    setInterval(() => {
+        const factSelect = document.getElementById('factMonthSelect');
         if(factSelect) {
             factSelect.innerHTML = [...Array(12)].map((_,i)=>`<option value="${i}" ${currentDisplayMonth==i?'selected':''}>${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][i]}</option>`).join('');
-            factSelect.onchange = (e)=>{ currentDisplayMonth=parseInt(e.target.value); if(document.getElementById('monthSelector')) document.getElementById('monthSelector').value=currentDisplayMonth; updateDashboardUI(); renderExpenses(); updateSuggestions(); };
+            factSelect.onchange = async (e) => { currentDisplayMonth = parseInt(e.target.value); if(document.getElementById('monthSelector')) document.getElementById('monthSelector').value = currentDisplayMonth; await updateDashboardUI(); renderExpenses(); updateSuggestions(); };
         }
     }, 500);
+    
+    // Demander permission notifications
+    if(Notification.permission !== "granted") Notification.requestPermission();
 </script>
 </body>
 </html>
