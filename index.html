@@ -3,117 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI.MG - Maquette Visuelle</title>
+    <title>AI.MG - Gestion Personnelle</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #f0f4f8; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.95); border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .bg-login { background: linear-gradient(180deg, #9333ea 0%, #ec4899 100%); }
-        .bg-connexion { background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%); }
-        .input-field { background: white; border-radius: 10px; padding: 12px; margin-bottom: 10px; border: none; width: 100%; }
-        .status-badge { border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; font-weight: bold; }
+        :root { --primary: #2563eb; --secondary: #9333ea; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .page { display: none; min-height: 100vh; padding-bottom: 80px; }
+        .page.active { display: block; }
+        .glass-card { background: white; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+        .bg-auth-inscription { background: linear-gradient(180deg, #9333ea 0%, #ec4899 100%); }
+        .bg-auth-connexion { background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%); }
+        .nav-fixed { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 12px; z-index: 50; }
     </style>
 </head>
-<body class="p-4">
+<body>
 
-    <div class="max-w-7xl mx-auto space-y-12">
-        
-        <h2 class="text-xl font-bold border-b-2 border-gray-300 pb-2">A - INSCRIPTION / CONNEXION</h2>
-        <div class="grid md:grid-cols-2 gap-8 max-w-4xl">
-            <div class="bg-login p-8 rounded-[40px] text-white shadow-xl text-center">
-                <h3 class="text-2xl font-semibold mb-6">Inscription</h3>
-                <input type="email" placeholder="Email" class="input-field text-gray-800">
-                <input type="password" placeholder="Mot de passe" class="input-field text-gray-800">
-                <input type="text" placeholder="+281 Numéro de téléphone" class="input-field text-gray-800">
-                <button class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-bold mt-4 shadow-lg">S'inscrire</button>
-                <p class="mt-6 text-sm opacity-80">Vous avez déjà un compte ? <br><b>Se connecter</b></p>
-            </div>
-            <div class="bg-connexion p-8 rounded-[40px] text-white shadow-xl text-center">
-                <h3 class="text-2xl font-semibold mb-6">Connexion</h3>
-                <input type="email" placeholder="Email" class="input-field text-gray-800">
-                <input type="password" placeholder="Mot de passe" class="input-field text-gray-800">
-                <p class="text-right text-xs mb-4">Mot de passe oublié ?</p>
-                <button class="w-full bg-blue-700 hover:bg-blue-800 py-3 rounded-xl font-bold mt-4 shadow-lg">Se connecter</button>
-                <p class="mt-6 text-sm opacity-80">Pas de compte ? <b>S'inscrire</b></p>
-            </div>
-        </div>
-
-        <h2 class="text-xl font-bold border-b-2 border-gray-300 pb-2 mt-12">B - BIENVENUE (ACCUEIL)</h2>
-        <div class="glass max-w-md mx-auto p-6 text-center">
-            <h3 class="text-2xl font-bold mb-6">Bienvenue</h3>
-            <div class="grid grid-cols-2 gap-6">
-                <div class="space-y-2">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2382/2382533.png" class="w-16 mx-auto">
-                    <p class="font-bold text-gray-600">FACTURATION</p>
-                </div>
-                <div class="space-y-2">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2693/2693507.png" class="w-16 mx-auto">
-                    <p class="font-bold text-gray-600">CALENDRIER</p>
-                </div>
-                <div class="space-y-2">
-                    <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="w-16 mx-auto">
-                    <p class="font-bold text-gray-600">LOCALISATION</p>
-                </div>
-                <div class="space-y-2">
-                    <img src="https://cdn-icons-png.flaticon.com/512/606/606548.png" class="w-16 mx-auto">
-                    <p class="font-bold text-gray-600">PROJET</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid md:grid-cols-2 gap-8 mt-12">
+    <div id="page-auth" class="page active bg-slate-100 p-6">
+        <div class="max-w-md mx-auto space-y-8">
+            <h1 class="text-center text-2xl font-black text-gray-800">AI.MG : AUTHENTIFICATION</h1>
             
-            <div class="glass p-6">
-                <h3 class="text-lg font-bold text-blue-800 mb-4 uppercase">E - Localisation</h3>
-                <div class="bg-gray-50 p-4 rounded-2xl mb-4">
-                    <label class="text-sm font-bold block mb-2">Enregistrer un nouvel objet</label>
-                    <input type="text" placeholder="Enregistrer un nouvel objet" class="w-full p-2 border rounded-lg mb-2">
-                    <div class="flex gap-2">
-                        <button class="bg-white border p-2 rounded-lg flex-1 text-xs">Maison</button>
-                        <button class="bg-white border p-2 rounded-lg flex-1 text-xs">Magasin</button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="aspect-square bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">vide</div>
-                    <div class="aspect-square bg-gray-200 rounded-xl flex items-center justify-center text-xs text-gray-400">vide</div>
-                    <button class="aspect-square border-2 border-dashed border-blue-300 rounded-xl flex items-center justify-center text-blue-500">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                </div>
+            <div class="bg-auth-inscription p-8 rounded-[40px] text-white shadow-xl">
+                <h2 class="text-xl font-bold mb-4 text-center">Inscription</h2>
+                <input type="email" placeholder="Email" class="w-full p-3 rounded-xl mb-3 text-gray-800 outline-none">
+                <input type="password" placeholder="Mot de passe" class="w-full p-3 rounded-xl mb-3 text-gray-800 outline-none">
+                <input type="text" placeholder="+261 Numéro de téléphone" class="w-full p-3 rounded-xl mb-3 text-gray-800 outline-none">
+                <button onclick="showPage('page-home')" class="w-full bg-blue-600 py-3 rounded-xl font-bold shadow-lg mt-2">S'inscrire</button>
             </div>
 
-            <div class="glass p-6">
-                <h3 class="text-lg font-bold text-blue-800 mb-4 uppercase">F - Projet</h3>
-                <p class="text-xs font-bold mb-4">10 projets ce mois-ci / 12 mois</p>
-                
-                <div class="space-y-4">
-                    <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-sm">Construire la terrasse</span>
-                            <span class="status-badge bg-green-100 text-green-600">En cours</span>
-                        </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full">
-                            <div class="bg-green-500 h-2 rounded-full w-[60%]"></div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-sm">Construire la fager</span>
-                            <span class="status-badge bg-blue-100 text-blue-600">Terminé</span>
-                        </div>
-                        <div class="w-full bg-gray-100 h-2 rounded-full">
-                            <div class="bg-blue-500 h-2 rounded-full w-full"></div>
-                        </div>
-                    </div>
-                </div>
-                <button class="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-md">Ajouter un projet</button>
+            <div class="bg-auth-connexion p-8 rounded-[40px] text-white shadow-xl">
+                <h2 class="text-xl font-bold mb-4 text-center">Connexion</h2>
+                <input type="email" placeholder="Email" class="w-full p-3 rounded-xl mb-3 text-gray-800 outline-none">
+                <input type="password" placeholder="Mot de passe" class="w-full p-3 rounded-xl mb-2 text-gray-800 outline-none">
+                <p class="text-right text-xs mb-4 opacity-80 cursor-pointer">Mot de passe oublié ?</p>
+                <button onclick="showPage('page-home')" class="w-full bg-blue-700 py-3 rounded-xl font-bold shadow-lg">Se connecter</button>
             </div>
-
         </div>
-
     </div>
 
+    <div id="page-home" class="page p-6">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-xl font-bold">AI.MG</h1>
+            <div class="flex items-center space-x-3">
+                <i class="fa-regular fa-bell text-xl"></i>
+                <img src="https://ui-avatars.com/api/?name=User&background=random" class="w-10 h-10 rounded-full border shadow">
+            </div>
+        </header>
+
+        <div class="glass-card p-6 text-center mb-8">
+            <h2 class="text-lg font-bold mb-6">Bienvenue</h2>
+            <div class="grid grid-cols-2 gap-6">
+                <div onclick="showPage('page-facture')" class="cursor-pointer">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2382/2382533.png" class="w-12 mx-auto mb-2">
+                    <p class="text-xs font-bold text-gray-600">FACTURATION</p>
+                </div>
+                <div onclick="showPage('page-home')" class="cursor-pointer">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2693/2693507.png" class="w-12 mx-auto mb-2">
+                    <p class="text-xs font-bold text-gray-600">CALENDRIER</p>
+                </div>
+                <div onclick="showPage('page-local')" class="cursor-pointer">
+                    <img src="https://cdn-icons-png.flaticon.com/512/854/854878.png" class="w-12 mx-auto mb-2">
+                    <p class="text-xs font-bold text-gray-600">LOCALISATION</p>
+                </div>
+                <div onclick="showPage('page-projet')" class="cursor-pointer">
+                    <img src="https://cdn-icons-png.flaticon.com/512/606/606548.png" class="w-12 mx-auto mb-2">
+                    <p class="text-xs font-bold text-gray-600">PROJET</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-facture" class="page p-6">
+        <h2 class="text-lg font-bold text-blue-800 mb-6 uppercase"><i class="fa-solid fa-arrow-left mr-2" onclick="showPage('page-home')"></i> Facturation</h2>
+        <div class="glass-card p-6 mb-4">
+            <div class="grid grid-cols-2 gap-4 text-xs">
+                <div class="p-3 bg-blue-50 rounded-xl"><b>JIRAMA</b> (Eau/Elec)</div>
+                <div class="p-3 bg-blue-50 rounded-xl"><b>Loyer</b></div>
+                <div class="p-3 bg-green-50 rounded-xl"><b>Alimentation</b></div>
+                <div class="p-3 bg-yellow-50 rounded-xl"><b>Transport</b></div>
+            </div>
+            <div class="mt-8 border-t pt-4 flex justify-between items-center">
+                <span class="text-xs font-bold text-gray-400 uppercase">Total Mensuel</span>
+                <span class="text-xl font-black text-indigo-600 uppercase">1,500,000 MGA</span>
+            </div>
+            <button class="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-bold">Ajouter dépense</button>
+        </div>
+    </div>
+
+    <div id="page-local" class="page p-6">
+        <h2 class="text-lg font-bold text-blue-800 mb-6 uppercase"><i class="fa-solid fa-arrow-left mr-2" onclick="showPage('page-home')"></i> Localisation</h2>
+        <div class="glass-card p-6">
+            <input type="text" placeholder="Nom de l'objet (ex: Clés)" class="w-full p-3 bg-gray-50 rounded-xl mb-4 outline-none border">
+            <div class="flex gap-2 mb-6">
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm flex-1">Maison</button>
+                <button class="bg-gray-100 px-4 py-2 rounded-lg text-sm flex-1">Magasin</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2" id="photo-grid">
+                <div class="aspect-square bg-gray-100 rounded-xl border-2 border-dashed flex items-center justify-center text-gray-400">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+                <script>
+                    for(let i=0; i<8; i++) document.write('<div class="aspect-square bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center text-[10px] text-gray-300">vide</div>');
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-projet" class="page p-6">
+        <h2 class="text-lg font-bold text-blue-800 mb-6 uppercase"><i class="fa-solid fa-arrow-left mr-2" onclick="showPage('page-home')"></i> Projets</h2>
+        <p class="text-xs font-bold text-gray-500 mb-4 uppercase">10 Projets / 12 Mois</p>
+        
+        <div class="space-y-4">
+            <div class="glass-card p-4">
+                <div class="flex justify-between items-center mb-2 text-sm">
+                    <b>Construire la terrasse</b>
+                    <span class="bg-green-100 text-green-600 text-[10px] px-2 py-1 rounded-full font-bold">En cours</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div class="bg-green-500 h-full w-[65%]"></div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 opacity-70">
+                <div class="flex justify-between items-center mb-2 text-sm">
+                    <b>Projet Peinture</b>
+                    <span class="bg-blue-100 text-blue-600 text-[10px] px-2 py-1 rounded-full font-bold">Terminé</span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div class="bg-blue-500 h-full w-full"></div>
+                </div>
+            </div>
+        </div>
+        <button class="w-full mt-8 bg-blue-600 text-white py-3 rounded-xl font-bold">Ajouter un projet</button>
+    </div>
+
+    <nav class="nav-fixed">
+        <button onclick="showPage('page-home')" class="flex flex-col items-center text-blue-600">
+            <i class="fa-solid fa-house"></i>
+            <span class="text-[10px]">Accueil</span>
+        </button>
+        <button onclick="showPage('page-facture')" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+            <span class="text-[10px]">Factures</span>
+        </button>
+        <button onclick="showPage('page-local')" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span class="text-[10px]">Lieux</span>
+        </button>
+        <button onclick="showPage('page-projet')" class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-diagram-project"></i>
+            <span class="text-[10px]">Projets</span>
+        </button>
+    </nav>
+
+    <script>
+        // Fonction simple pour changer de page
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+    </script>
 </body>
 </html>
