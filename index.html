@@ -13,66 +13,184 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: radial-gradient(circle at 10% 30%, #1a1a2e, #0f0f1a); min-height: 100vh; padding: 16px; }
         .app-container { max-width: 550px; margin: 0 auto; background: rgba(255,255,255,0.06); backdrop-filter: blur(10px); border-radius: 48px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); }
-        .page { display: none; padding: 20px 18px; }
+        .page { display: none; padding: 20px 18px; animation: fadeIn 0.3s ease; }
         .active-page { display: block; }
-        .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-radius: 32px; padding: 30px 24px; border: 1px solid rgba(255,255,255,0.2); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); border-radius: 32px; padding: 20px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 16px; }
         .gradient-btn { background: linear-gradient(135deg, #a06eff, #6c3eff); border: none; color: white; padding: 14px 20px; border-radius: 60px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 12px; }
         .gradient-btn-secondary { background: linear-gradient(135deg, #3a86ff, #2666cc); }
         .gradient-btn-danger { background: #d9534f; }
-        input { background: rgba(255,255,255,0.9); border: none; border-radius: 60px; padding: 14px 18px; width: 100%; margin-bottom: 14px; font-size: 16px; }
-        .logo { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #f0e6ff, #c7b9ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-align: center; margin-bottom: 20px; }
-        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 12px 24px; border-radius: 40px; z-index: 1000; animation: fadeOut 3s ease forwards; font-size: 14px; }
+        .gradient-btn-small { padding: 8px 16px; font-size: 14px; width: auto; margin: 0; }
+        input, select, textarea { background: rgba(255,255,255,0.9); border: none; border-radius: 60px; padding: 12px 16px; width: 100%; margin-bottom: 12px; font-size: 14px; }
+        .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #f0e6ff, #c7b9ff); -webkit-background-clip: text; background-clip: text; color: transparent; text-align: center; margin-bottom: 15px; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 10px 20px; border-radius: 40px; z-index: 1000; animation: fadeOut 3s ease forwards; font-size: 14px; }
         @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
-        .link-btn { background: none; border: none; color: #c7b9ff; cursor: pointer; margin-top: 10px; font-size: 14px; text-align: center; width: 100%; }
-        h2 { color: white; text-align: center; margin-bottom: 25px; font-size: 24px; }
-        p { color: #ccc; text-align: center; margin: 15px 0; }
+        .header-app { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .menu-card { background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05)); border-radius: 28px; padding: 20px 10px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.25); }
+        .menu-card i { font-size: 40px; background: linear-gradient(135deg, #ffd966, #ffb347); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .menu-card h3 { color: white; font-size: 16px; margin-top: 8px; }
+        .finance-row { display: flex; gap: 12px; margin-bottom: 20px; }
+        .finance-card { flex: 1; background: rgba(0,0,0,0.4); border-radius: 28px; padding: 15px; text-align: center; }
+        .finance-card h4 { color: #ccc; font-size: 12px; margin-bottom: 5px; }
+        .finance-amount { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #f9f3c1, #ffe6a3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .cat-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+        .cat-btn { background: rgba(255,255,255,0.2); border-radius: 40px; padding: 6px 14px; font-size: 12px; cursor: pointer; }
+        .cat-active { background: #6c3eff; color: white; }
+        .expense-item { display: flex; justify-content: space-between; background: rgba(255,255,245,0.9); padding: 10px 15px; border-radius: 30px; margin-bottom: 8px; font-size: 14px; }
+        .object-card { background: rgba(255,255,255,0.9); border-radius: 24px; padding: 12px; margin-bottom: 10px; }
+        .photo-thumb { width: 50px; height: 50px; object-fit: cover; border-radius: 12px; margin: 4px; cursor: pointer; }
+        .search-box { background: white; border-radius: 60px; padding: 6px 12px; display: flex; gap: 8px; margin-bottom: 15px; }
+        .search-box input { margin: 0; padding: 8px; }
+        h2 { color: white; font-size: 20px; margin-bottom: 15px; }
+        h3 { color: white; font-size: 16px; margin-bottom: 10px; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .mt-2 { margin-top: 10px; }
+        .mb-2 { margin-bottom: 10px; }
+        .text-center { text-align: center; }
     </style>
 </head>
 <body>
 <div class="app-container">
-    <!-- PAGE LOGIN -->
+    <!-- LOGIN -->
     <div id="loginPage" class="page active-page">
         <div class="card">
             <div class="logo">AI.MG</div>
-            <h2>Connexion</h2>
-            <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
-            <input type="password" id="loginPassword" placeholder="Mot de passe" autocomplete="current-password">
+            <h2 class="text-center">Connexion</h2>
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPassword" placeholder="Mot de passe">
             <button id="signinBtn" class="gradient-btn">Se connecter</button>
             <button id="showRegisterBtn" class="gradient-btn gradient-btn-secondary">Créer un compte</button>
-            <button id="forgotPwdBtn" class="link-btn">Mot de passe oublié ?</button>
-            <div id="loginMessage" style="margin-top: 15px; text-align: center; color: #ffb4a2; font-size: 14px;"></div>
+            <div id="loginMessage" class="text-center" style="color:#ffb4a2; font-size:13px;"></div>
         </div>
     </div>
 
-    <!-- PAGE INSCRIPTION -->
+    <!-- REGISTER -->
     <div id="registerPage" class="page">
         <div class="card">
             <div class="logo">AI.MG</div>
-            <h2>Inscription</h2>
-            <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
-            <input type="password" id="regPassword" placeholder="Mot de passe (min 6 caractères)" autocomplete="new-password">
-            <input type="tel" id="regPhone" placeholder="Téléphone (+261...)" autocomplete="tel">
+            <h2 class="text-center">Inscription</h2>
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="password" id="regPassword" placeholder="Mot de passe (min 6)">
+            <input type="tel" id="regPhone" placeholder="Téléphone (+261...)">
             <button id="registerBtn" class="gradient-btn">S'inscrire</button>
-            <button id="showLoginBtn" class="gradient-btn gradient-btn-secondary">Retour à la connexion</button>
-            <div id="registerMessage" style="margin-top: 15px; text-align: center; color: #ffb4a2; font-size: 14px;"></div>
+            <button id="showLoginBtn" class="gradient-btn gradient-btn-secondary">Retour</button>
+            <div id="registerMessage" class="text-center" style="color:#ffb4a2; font-size:13px;"></div>
         </div>
     </div>
 
-    <!-- DASHBOARD -->
+    <!-- DASHBOARD ACCUEIL -->
     <div id="dashboardPage" class="page">
-        <div class="card">
+        <div class="flex-between">
             <div class="logo">AI.MG</div>
-            <h2>✅ Connexion réussie !</h2>
-            <p>Bienvenue <strong id="userEmailDisplay"></strong></p>
-            <button id="logoutBtn" class="gradient-btn gradient-btn-danger" style="margin-top: 20px;">Déconnexion</button>
+            <button id="logoutBtn" class="gradient-btn-danger" style="padding: 8px 16px; border-radius: 40px; border: none; color: white; cursor: pointer;">Déco</button>
         </div>
+
+        <!-- Portefeuille mensuel -->
+        <div class="finance-row">
+            <div class="finance-card">
+                <h4>Salaire mensuel</h4>
+                <div class="finance-amount" id="salaryDisplay">0 Ar</div>
+                <input type="number" id="salaryInput" placeholder="Montant" style="margin-top: 8px; padding: 8px;">
+                <button id="saveSalaryBtn" class="gradient-btn-small" style="margin-top: 5px;">Enregistrer</button>
+            </div>
+            <div class="finance-card">
+                <h4>Épargne</h4>
+                <div class="finance-amount" id="savingDisplay">0 Ar</div>
+                <div style="font-size: 10px; color:#aaa;" id="savingDetail"></div>
+            </div>
+        </div>
+
+        <!-- Menu 4 modules -->
+        <div class="grid-2x2">
+            <div class="menu-card" data-nav="facturation"><i class="fas fa-file-invoice-dollar"></i><h3>Facturation</h3></div>
+            <div class="menu-card" data-nav="calendrier"><i class="fas fa-calendar-alt"></i><h3>Calendrier</h3></div>
+            <div class="menu-card" data-nav="localisation"><i class="fas fa-map-marker-alt"></i><h3>Localisation</h3></div>
+            <div class="menu-card" data-nav="projet"><i class="fas fa-tasks"></i><h3>Projets</h3></div>
+        </div>
+    </div>
+
+    <!-- FACTURATION -->
+    <div id="facturationPage" class="page">
+        <div class="flex-between">
+            <button id="backFacturation" class="gradient-btn-small" style="background:#6c3eff;">← Retour</button>
+            <div class="logo" style="font-size:1.2rem;">Factures</div>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="card">
+            <select id="monthSelect" style="margin-bottom: 10px;">
+                <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option><option value="3">Avril</option>
+                <option value="4">Mai</option><option value="5">Juin</option><option value="6">Juillet</option><option value="7">Août</option>
+                <option value="8">Septembre</option><option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
+            </select>
+            <div class="cat-grid" id="catContainer"></div>
+            <div class="flex-between" style="gap: 8px;">
+                <input type="text" id="expenseName" placeholder="Nom" style="flex:2">
+                <input type="number" id="expenseAmount" placeholder="Montant" style="flex:1">
+                <button id="addExpenseBtn" class="gradient-btn-small">+</button>
+            </div>
+            <div id="expenseList" style="margin-top: 15px;"></div>
+            <div class="text-center" style="margin-top: 10px; font-weight: bold; color: white;" id="totalMonthly"></div>
+        </div>
+    </div>
+
+    <!-- CALENDRIER -->
+    <div id="calendrierPage" class="page">
+        <div class="flex-between">
+            <button id="backCalendrier" class="gradient-btn-small" style="background:#6c3eff;">← Retour</button>
+            <div class="logo" style="font-size:1.2rem;">Agenda</div>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="card">
+            <input type="text" id="eventTitle" placeholder="Titre événement">
+            <input type="datetime-local" id="eventDate">
+            <textarea id="eventDesc" rows="2" placeholder="Description"></textarea>
+            <button id="addEventBtn" class="gradient-btn">Ajouter</button>
+        </div>
+        <div class="card" id="eventsList"></div>
+    </div>
+
+    <!-- LOCALISATION -->
+    <div id="localisationPage" class="page">
+        <div class="flex-between">
+            <button id="backLocalisation" class="gradient-btn-small" style="background:#6c3eff;">← Retour</button>
+            <div class="logo" style="font-size:1.2rem;">Objets</div>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="card">
+            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchObject" placeholder="Rechercher..."></div>
+            <input type="text" id="objName" placeholder="Nom objet">
+            <div id="customFieldsContainer"></div>
+            <button id="addFieldBtn" class="gradient-btn-small" style="background:#9c27b0;">+ Ajouter champ</button>
+            <button id="saveObjectBtn" class="gradient-btn mt-2">Sauvegarder</button>
+        </div>
+        <div class="card" id="objectsList"></div>
+    </div>
+
+    <!-- PROJETS -->
+    <div id="projetPage" class="page">
+        <div class="flex-between">
+            <button id="backProjet" class="gradient-btn-small" style="background:#6c3eff;">← Retour</button>
+            <div class="logo" style="font-size:1.2rem;">Projets</div>
+            <div style="width:50px;"></div>
+        </div>
+        <div class="card">
+            <input type="text" id="projectName" placeholder="Nom du projet">
+            <select id="projectMonthSelect">
+                <option value="0">Janvier</option><option value="1">Février</option><option value="2">Mars</option><option value="3">Avril</option>
+                <option value="4">Mai</option><option value="5">Juin</option><option value="6">Juillet</option><option value="7">Août</option>
+                <option value="8">Septembre</option><option value="9">Octobre</option><option value="10">Novembre</option><option value="11">Décembre</option>
+            </select>
+            <select id="projectStatusSelect"><option value="en cours">En cours</option><option value="terminé">Terminé</option></select>
+            <button id="addProjectBtn" class="gradient-btn">Ajouter projet</button>
+        </div>
+        <div class="card" id="projectsList"></div>
     </div>
 </div>
 
 <script>
-    // ==================== VOS VALEURS FIREBASE CORRECTES ====================
     const firebaseConfig = {
-        apiKey: "AIzaSyDL-POFKpcu9JNwdbW_czpAraeFPNaC9Bc",  // ← VOTRE VRAIE CLÉ API
+        apiKey: "AIzaSyDL-POFKpcu9JNwdbW_czpAraeFPNaC9Bc",
         authDomain: "aimg-app.firebaseapp.com",
         projectId: "aimg-app",
         storageBucket: "aimg-app.firebasestorage.app",
@@ -83,176 +201,287 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
     
-    function showToast(message, isError = false) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.style.background = isError ? '#d9534f' : 'rgba(0,0,0,0.9)';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
+    let currentUser = null;
+    let currentMonth = new Date().getMonth();
+    let activeCat = "Charges fixes";
+    let customFields = [];
+    
+    const categories = {
+        "Charges fixes": ["JIRAMA", "Loyer", "WIFI", "Crédit téléphone", "Autre"],
+        "Éducation": ["Écolage", "Transport scolaire", "Fournitures", "Cantine", "Gouter", "Autre"],
+        "Alimentation/repas": ["Courses", "Repas quotidien", "Autre"],
+        "Transport": ["Carburant", "Taxi/taxi-be", "Entretien véhicule", "Autre"],
+        "Santé": ["Médicaments", "Consultation", "Autre"],
+        "Shopping": ["Vêtements", "Autre"],
+        "Imprévus": ["Autre"]
+    };
+    
+    function showToast(msg, isErr) {
+        const t = document.createElement('div');
+        t.className = 'toast';
+        t.style.background = isErr ? '#d9534f' : 'rgba(0,0,0,0.9)';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 3000);
     }
     
-    function showPage(pageId) {
+    function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-        document.getElementById(pageId).classList.add('active-page');
+        document.getElementById(id).classList.add('active-page');
+        if (id === 'dashboardPage') loadDashboard();
+        if (id === 'facturationPage') loadFacturation();
+        if (id === 'calendrierPage') loadCalendrier();
+        if (id === 'localisationPage') loadLocalisation();
+        if (id === 'projetPage') loadProjets();
     }
     
-    // Fonction pour créer/mettre à jour le document utilisateur
-    async function ensureUserDocument(user, phone = null) {
-        const userRef = db.collection('users').doc(user.uid);
-        const doc = await userRef.get();
-        
+    async function ensureUserDoc() {
+        const docRef = db.collection('users').doc(currentUser.uid);
+        const doc = await docRef.get();
         if (!doc.exists) {
-            await userRef.set({
-                email: user.email,
-                phoneNumber: phone || '',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log("Document créé pour:", user.uid);
-        } else {
-            await userRef.update({
-                lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            console.log("Document mis à jour pour:", user.uid);
+            await docRef.set({ email: currentUser.email, createdAt: new Date() });
         }
+        return docRef;
     }
     
-    // INSCRIPTION
+    function getMonthKey() { return `2025_${currentMonth}`; }
+    
+    async function loadDashboard() {
+        const docRef = await ensureUserDoc();
+        const monthData = await docRef.collection('months').doc(getMonthKey()).get();
+        const salary = monthData.exists ? (monthData.data().salary || 0) : 0;
+        const expenses = monthData.exists ? (monthData.data().expenses || {}) : {};
+        let total = 0;
+        for (let cat in expenses) {
+            (expenses[cat] || []).forEach(e => total += e.amount || 0);
+        }
+        document.getElementById('salaryDisplay').innerHTML = salary.toLocaleString() + ' Ar';
+        document.getElementById('savingDisplay').innerHTML = (salary - total).toLocaleString() + ' Ar';
+        document.getElementById('savingDetail').innerHTML = `Salaire: ${salary.toLocaleString()} Ar | Dépenses: ${total.toLocaleString()} Ar`;
+        document.getElementById('salaryInput').value = salary;
+    }
+    
+    async function saveSalary() {
+        const salary = parseFloat(document.getElementById('salaryInput').value) || 0;
+        const docRef = await ensureUserDoc();
+        await docRef.collection('months').doc(getMonthKey()).set({ salary }, { merge: true });
+        showToast("Salaire enregistré");
+        loadDashboard();
+    }
+    
+    async function loadFacturation() {
+        renderCategories();
+        await renderExpenses();
+        document.getElementById('addExpenseBtn').onclick = addExpense;
+        document.getElementById('monthSelect').onchange = (e) => { currentMonth = parseInt(e.target.value); renderExpenses(); loadDashboard(); };
+    }
+    
+    function renderCategories() {
+        const container = document.getElementById('catContainer');
+        container.innerHTML = Object.keys(categories).map(cat => `<div class="cat-btn ${activeCat===cat?'cat-active':''}" data-cat="${cat}">${cat}</div>`).join('');
+        document.querySelectorAll('.cat-btn').forEach(btn => btn.onclick = () => { activeCat = btn.dataset.cat; renderCategories(); renderExpenses(); });
+    }
+    
+    async function renderExpenses() {
+        const docRef = await ensureUserDoc();
+        const monthData = await docRef.collection('months').doc(getMonthKey()).get();
+        const expenses = monthData.exists ? (monthData.data().expenses || {}) : {};
+        const list = expenses[activeCat] || [];
+        const container = document.getElementById('expenseList');
+        container.innerHTML = list.map((e, i) => `<div class="expense-item"><span>${e.name}: ${e.amount} Ar</span><div><button class="editExpense" data-idx="${i}">✏️</button><button class="delExpense" data-idx="${i}">🗑️</button></div></div>`).join('');
+        let total = 0;
+        for (let cat in expenses) (expenses[cat] || []).forEach(e => total += e.amount);
+        document.getElementById('totalMonthly').innerHTML = `💰 Total: ${total.toLocaleString()} Ar`;
+        
+        document.querySelectorAll('.editExpense').forEach(btn => btn.onclick = async () => {
+            const idx = btn.dataset.idx;
+            const newName = prompt("Nouveau nom", list[idx].name);
+            const newAmount = prompt("Nouveau montant", list[idx].amount);
+            if (newName && newAmount) {
+                list[idx] = { name: newName, amount: parseFloat(newAmount) };
+                await docRef.collection('months').doc(getMonthKey()).set({ expenses: { ...expenses, [activeCat]: list } }, { merge: true });
+                renderExpenses();
+                loadDashboard();
+            }
+        });
+        document.querySelectorAll('.delExpense').forEach(btn => btn.onclick = async () => {
+            list.splice(btn.dataset.idx, 1);
+            await docRef.collection('months').doc(getMonthKey()).set({ expenses: { ...expenses, [activeCat]: list } }, { merge: true });
+            renderExpenses();
+            loadDashboard();
+        });
+    }
+    
+    async function addExpense() {
+        const name = document.getElementById('expenseName').value.trim();
+        const amount = parseFloat(document.getElementById('expenseAmount').value);
+        if (!name || isNaN(amount)) return showToast("Nom et montant valides", true);
+        const docRef = await ensureUserDoc();
+        const monthData = await docRef.collection('months').doc(getMonthKey()).get();
+        const expenses = monthData.exists ? (monthData.data().expenses || {}) : {};
+        if (!expenses[activeCat]) expenses[activeCat] = [];
+        expenses[activeCat].push({ name, amount });
+        await docRef.collection('months').doc(getMonthKey()).set({ expenses }, { merge: true });
+        document.getElementById('expenseName').value = '';
+        document.getElementById('expenseAmount').value = '';
+        renderExpenses();
+        loadDashboard();
+        showToast("Dépense ajoutée");
+    }
+    
+    async function loadCalendrier() {
+        const docRef = await ensureUserDoc();
+        const monthData = await docRef.collection('months').doc(getMonthKey()).get();
+        const events = monthData.exists ? (monthData.data().events || []) : [];
+        const container = document.getElementById('eventsList');
+        container.innerHTML = `<h3>Événements</h3>` + events.map((e, i) => `<div class="expense-item"><div><strong>${e.title}</strong><br><small>${e.date} - ${e.desc || ''}</small></div><button class="delEvent" data-idx="${i}">🗑️</button></div>`).join('');
+        document.querySelectorAll('.delEvent').forEach(btn => btn.onclick = async () => {
+            events.splice(btn.dataset.idx, 1);
+            await docRef.collection('months').doc(getMonthKey()).set({ events }, { merge: true });
+            loadCalendrier();
+        });
+        document.getElementById('addEventBtn').onclick = async () => {
+            const title = document.getElementById('eventTitle').value.trim();
+            const date = document.getElementById('eventDate').value;
+            const desc = document.getElementById('eventDesc').value;
+            if (!title || !date) return showToast("Titre et date requis", true);
+            events.push({ title, date, desc });
+            await docRef.collection('months').doc(getMonthKey()).set({ events }, { merge: true });
+            document.getElementById('eventTitle').value = '';
+            document.getElementById('eventDate').value = '';
+            document.getElementById('eventDesc').value = '';
+            loadCalendrier();
+            showToast("Événement ajouté");
+        };
+    }
+    
+    function renderCustomFields() {
+        const container = document.getElementById('customFieldsContainer');
+        container.innerHTML = customFields.map((f, i) => `<div class="flex-between" style="gap:8px; margin-bottom:8px;"><input type="text" placeholder="Nom champ" value="${f.label}" id="fieldLabel_${i}" style="flex:1"><input type="text" placeholder="Valeur" value="${f.value}" id="fieldValue_${i}" style="flex:1"><button class="removeField" data-idx="${i}">❌</button></div>`).join('');
+        document.querySelectorAll('.removeField').forEach(btn => btn.onclick = () => { customFields.splice(btn.dataset.idx, 1); renderCustomFields(); });
+    }
+    
+    async function loadLocalisation() {
+        customFields = [];
+        renderCustomFields();
+        document.getElementById('addFieldBtn').onclick = () => { customFields.push({ label: "", value: "" }); renderCustomFields(); };
+        document.getElementById('saveObjectBtn').onclick = async () => {
+            const name = document.getElementById('objName').value.trim();
+            if (!name) return showToast("Nom requis", true);
+            const fields = [];
+            for (let i = 0; i < customFields.length; i++) {
+                const lbl = document.getElementById(`fieldLabel_${i}`)?.value || "";
+                const val = document.getElementById(`fieldValue_${i}`)?.value || "";
+                if (lbl) fields.push({ label: lbl, value: val });
+            }
+            const docRef = await ensureUserDoc();
+            const objectsData = await docRef.collection('objects').get();
+            const objects = objectsData.docs.map(d => d.data());
+            await docRef.collection('objects').doc(Date.now().toString()).set({ name, fields, createdAt: new Date() });
+            document.getElementById('objName').value = '';
+            customFields = [];
+            renderCustomFields();
+            renderObjectsList();
+            showToast("Objet sauvegardé");
+        };
+        document.getElementById('searchObject').oninput = () => renderObjectsList();
+        await renderObjectsList();
+    }
+    
+    async function renderObjectsList() {
+        const docRef = await ensureUserDoc();
+        const objectsData = await docRef.collection('objects').get();
+        let objects = objectsData.docs.map(d => ({ id: d.id, ...d.data() }));
+        const search = document.getElementById('searchObject')?.value.toLowerCase() || "";
+        objects = objects.filter(o => o.name.toLowerCase().includes(search) || o.fields.some(f => f.label.toLowerCase().includes(search) || f.value.toLowerCase().includes(search)));
+        const container = document.getElementById('objectsList');
+        container.innerHTML = objects.map(obj => `<div class="object-card"><strong>${obj.name}</strong>${obj.fields.map(f => `<div>📌 ${f.label}: ${f.value}</div>`).join('')}<button class="deleteObj" data-id="${obj.id}">🗑️ Supprimer</button></div>`).join('');
+        document.querySelectorAll('.deleteObj').forEach(btn => btn.onclick = async () => { await docRef.collection('objects').doc(btn.dataset.id).delete(); renderObjectsList(); showToast("Objet supprimé"); });
+    }
+    
+    async function loadProjets() {
+        const docRef = await ensureUserDoc();
+        const projectsData = await docRef.collection('projects').get();
+        const projects = projectsData.docs.map(d => ({ id: d.id, ...d.data() }));
+        const groups = Array(12).fill().map(() => []);
+        projects.forEach(p => groups[p.month].push(p));
+        let html = '';
+        for (let m = 0; m < 12; m++) {
+            const monthName = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m];
+            html += `<h4>${monthName} (${groups[m].length}/10)</h4>`;
+            groups[m].forEach(p => { html += `<div class="expense-item"><span>📌 ${p.name} - ${p.status}</span><div><button class="toggleStatus" data-id="${p.id}">🔄</button><button class="delProject" data-id="${p.id}">🗑️</button></div></div>`; });
+        }
+        document.getElementById('projectsList').innerHTML = html;
+        document.querySelectorAll('.toggleStatus').forEach(btn => btn.onclick = async () => {
+            const project = projects.find(p => p.id === btn.dataset.id);
+            if (project) {
+                project.status = project.status === "en cours" ? "terminé" : "en cours";
+                await docRef.collection('projects').doc(project.id).set(project);
+                loadProjets();
+            }
+        });
+        document.querySelectorAll('.delProject').forEach(btn => btn.onclick = async () => { await docRef.collection('projects').doc(btn.dataset.id).delete(); loadProjets(); showToast("Projet supprimé"); });
+        document.getElementById('addProjectBtn').onclick = async () => {
+            const name = document.getElementById('projectName').value.trim();
+            const month = parseInt(document.getElementById('projectMonthSelect').value);
+            const status = document.getElementById('projectStatusSelect').value;
+            if (!name) return showToast("Nom requis", true);
+            const existing = await docRef.collection('projects').get();
+            const monthCount = existing.docs.filter(d => d.data().month === month).length;
+            if (monthCount >= 10) return showToast("Max 10 projets ce mois", true);
+            await docRef.collection('projects').doc(Date.now().toString()).set({ name, month, status });
+            document.getElementById('projectName').value = '';
+            loadProjets();
+            showToast("Projet ajouté");
+        };
+    }
+    
+    // AUTH
     async function register() {
         const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value;
-        const phone = document.getElementById('regPhone').value.trim();
-        const msgDiv = document.getElementById('registerMessage');
-        
-        msgDiv.innerHTML = '';
-        
-        if (!email || !password) {
-            msgDiv.innerHTML = "❌ Email et mot de passe requis";
-            return;
-        }
-        if (password.length < 6) {
-            msgDiv.innerHTML = "❌ Mot de passe minimum 6 caractères";
-            return;
-        }
-        
-        msgDiv.innerHTML = "⏳ Création du compte...";
-        
+        const pwd = document.getElementById('regPassword').value;
+        if (!email || !pwd || pwd.length < 6) return showToast("Email et mot de passe (min 6)", true);
         try {
-            const userCred = await auth.createUserWithEmailAndPassword(email, password);
-            const user = userCred.user;
-            
-            await ensureUserDocument(user, phone);
-            
-            msgDiv.innerHTML = "✅ Compte créé avec succès !";
-            showToast("Compte créé ! Vous pouvez vous connecter");
-            
-            await auth.signOut();
-            setTimeout(() => {
-                showPage('loginPage');
-                document.getElementById('loginEmail').value = email;
-                document.getElementById('loginPassword').value = '';
-            }, 1500);
-            
-        } catch(e) {
-            let msg = e.message;
-            if (msg.includes('email-already-in-use')) msg = "Cet email est déjà utilisé";
-            if (msg.includes('invalid-email')) msg = "Email invalide";
-            if (msg.includes('weak-password')) msg = "Mot de passe trop faible (min 6 caractères)";
-            msgDiv.innerHTML = "❌ " + msg;
-            showToast(msg, true);
-        }
+            const userCred = await auth.createUserWithEmailAndPassword(email, pwd);
+            currentUser = userCred.user;
+            await ensureUserDoc();
+            showToast("Compte créé !");
+            showPage('dashboardPage');
+        } catch(e) { showToast(e.message, true); }
     }
     
-    // CONNEXION
     async function login() {
         const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const msgDiv = document.getElementById('loginMessage');
-        
-        msgDiv.innerHTML = '';
-        
-        if (!email || !password) {
-            msgDiv.innerHTML = "❌ Email et mot de passe requis";
-            return;
-        }
-        
-        msgDiv.innerHTML = "⏳ Connexion en cours...";
-        
+        const pwd = document.getElementById('loginPassword').value;
+        if (!email || !pwd) return showToast("Email et mot de passe requis", true);
         try {
-            const userCred = await auth.signInWithEmailAndPassword(email, password);
-            const user = userCred.user;
-            
-            await ensureUserDocument(user);
-            
-            document.getElementById('userEmailDisplay').textContent = user.email;
-            showToast("Connexion réussie !");
+            const userCred = await auth.signInWithEmailAndPassword(email, pwd);
+            currentUser = userCred.user;
+            await ensureUserDoc();
+            showToast("Connecté !");
             showPage('dashboardPage');
-            
-        } catch(e) {
-            let msg = e.message;
-            if (msg.includes('user-not-found')) msg = "Aucun compte trouvé avec cet email";
-            else if (msg.includes('wrong-password')) msg = "Mot de passe incorrect";
-            else if (msg.includes('invalid-email')) msg = "Email invalide";
-            else if (msg.includes('api-key')) msg = "Erreur de clé API";
-            msgDiv.innerHTML = "❌ " + msg;
-            showToast(msg, true);
-        }
+        } catch(e) { showToast(e.message, true); }
     }
     
-    // Mot de passe oublié
-    async function resetPassword() {
-        const email = prompt("Entrez votre email pour réinitialiser votre mot de passe :");
-        if (email && email.includes('@')) {
-            try {
-                await auth.sendPasswordResetEmail(email);
-                showToast("Email de réinitialisation envoyé !");
-            } catch(e) {
-                showToast("Email non trouvé", true);
-            }
-        } else if (email) {
-            showToast("Email invalide", true);
-        }
-    }
+    async function logout() { await auth.signOut(); currentUser = null; showPage('loginPage'); showToast("Déconnecté"); }
     
-    // Déconnexion
-    async function logout() {
-        await auth.signOut();
-        showToast("Déconnecté");
-        showPage('loginPage');
-        document.getElementById('loginEmail').value = '';
-        document.getElementById('loginPassword').value = '';
-    }
-    
-    // ==================== ÉTAT AUTHENTIFICATION ====================
     auth.onAuthStateChanged(async (user) => {
-        console.log("Auth state changed:", user ? user.email : "null");
-        if (user) {
-            try {
-                await ensureUserDocument(user);
-                showPage('dashboardPage');
-                document.getElementById('userEmailDisplay').textContent = user.email;
-            } catch(e) {
-                console.error("Erreur Firestore:", e);
-                showToast("Erreur de base de données", true);
-            }
-        } else {
-            showPage('loginPage');
-        }
+        if (user) { currentUser = user; await ensureUserDoc(); showPage('dashboardPage'); }
+        else showPage('loginPage');
     });
     
-    // ==================== BOUTONS ====================
     document.getElementById('signinBtn').onclick = login;
     document.getElementById('showRegisterBtn').onclick = () => showPage('registerPage');
     document.getElementById('showLoginBtn').onclick = () => showPage('loginPage');
     document.getElementById('registerBtn').onclick = register;
-    document.getElementById('forgotPwdBtn').onclick = resetPassword;
     document.getElementById('logoutBtn').onclick = logout;
-    
-    console.log("Application chargée - Firebase configuré avec vos valeurs");
-    console.log("Project ID:", firebaseConfig.projectId);
+    document.getElementById('saveSalaryBtn').onclick = saveSalary;
+    document.getElementById('backFacturation').onclick = () => showPage('dashboardPage');
+    document.getElementById('backCalendrier').onclick = () => showPage('dashboardPage');
+    document.getElementById('backLocalisation').onclick = () => showPage('dashboardPage');
+    document.getElementById('backProjet').onclick = () => showPage('dashboardPage');
+    document.querySelectorAll('.menu-card').forEach(card => card.onclick = () => showPage(card.dataset.nav + 'Page'));
 </script>
 </body>
 </html>
