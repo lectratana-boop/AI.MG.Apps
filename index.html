@@ -156,64 +156,195 @@
         </div>
         <div id="eventListPreview" style="margin-top: 12px; max-height: 200px; overflow-y: auto;"></div>
     </div>
+    <!-- ==================== AIZA 3D MODERNE ==================== -->
 
-    <!-- AIZA -->
-    <div id="aizaPage" class="page">
-        <div class="header-app">
-            <button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button>
-            <div class="aiza-gif-logo">
-                <img src="https://media.giphy.com/media/3o7abB06u9bNzA8LC8/giphy.gif" alt="AIZA 3D" style="width: 80px; height: 80px; border-radius: 20px;">
-                <div style="font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #f0e6ff, #c7b9ff, #a06eff); -webkit-background-clip: text; background-clip: text; color: transparent;">AIZA</div>
-            </div>
-            <div style="width: 50px;"></div>
-        </div>
-        
-        <div class="card">
-            <!-- Barre de recherche -->
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Rechercher par nom, localisation, mot-clé...">
-                <button id="searchBtn" class="gradient-btn" style="padding: 8px 16px; width: auto;">Rechercher</button>
-            </div>
-            
-            <!-- Catégories avec menu déroulant au survol -->
-            <div class="category-scroll" id="categoryScroll"></div>
-            
-            <!-- Champ pour ajouter un nouveau produit -->
-            <div style="display: flex; gap: 8px; margin: 10px 0;">
-                <input type="text" id="customProductInput" placeholder="Ajouter un nouveau produit...">
-                <button id="addCustomProductBtn" class="gradient-btn" style="padding: 8px 16px; width: auto;">➕</button>
-            </div>
-            
-            <!-- Formulaire d'ajout d'objet -->
-            <div class="form-card">
-                <h3 style="color:white; font-size: 16px; margin-bottom: 12px;">📦 Nouvel objet</h3>
-                <input type="text" id="objName" placeholder="Nom de l'objet *">
-                <select id="objCategory" style="margin-bottom: 12px;">
-                    <option value="👕 Vêtements">👕 Vêtements</option>
-                    <option value="🧸 Jouets">🧸 Jouets</option>
-                    <option value="📎 Bureautique">📎 Bureautique</option>
-                    <option value="🖥️ Informatique">🖥️ Informatique</option>
-                </select>
-                <input type="text" id="objSubCategory" placeholder="Sous-catégorie (ex: T-shirts)">
-                <input type="text" id="objLocation" placeholder="Localisation (où se trouve l'objet) *">
-                <textarea id="objDescription" rows="3" maxlength="250" placeholder="Description de l'objet (max 250 caractères)"></textarea>
-                <div style="font-size: 11px; color: #aaa; text-align: right; margin-top: -8px; margin-bottom: 12px;" id="charCount">0/250</div>
-                <input type="text" id="objKeywords" placeholder="Mots-clés (séparés par des virgules)">
-                
-                <!-- Upload de photos -->
-                <label style="color:white; margin-bottom: 5px; display: block;">📸 Photos (max 5)</label>
-                <input type="file" id="objPhotos" accept="image/*" multiple style="margin-bottom: 10px;">
-                <div id="photoPreview" class="photo-preview"></div>
-                
-                <button id="saveObjectBtn" class="gradient-btn">💾 Enregistrer l'objet</button>
-            </div>
-            
-            <!-- Résultats de recherche -->
-            <div id="resultsCount" class="result-count"></div>
-            <div id="objectsList"></div>
-        </div>
+<style>
+/* SEARCH 3D */
+.search-box {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 50px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border:1px solid rgba(255,255,255,0.2);
+}
+.search-box input {
+    flex:1;
+    background: transparent;
+    border:none;
+    color:white;
+    outline:none;
+}
+
+/* CATEGORIES 3D */
+.category-dropdown .dropbtn {
+    background: rgba(255,255,255,0.1);
+    border:none;
+    color:white;
+    padding:8px 16px;
+    border-radius:20px;
+    transition:0.2s;
+}
+.category-dropdown .dropbtn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(140,82,255,0.8);
+}
+
+/* CARDS PRODUITS */
+.object-card{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(12px);
+    border-radius:20px;
+    padding:14px;
+    margin-bottom:12px;
+    color:white;
+    box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    transition:0.2s;
+}
+.object-card:hover{
+    transform: translateY(-5px);
+}
+
+/* IMAGE FULLSCREEN */
+.big-preview{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.95);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+}
+.big-preview img{
+    max-width:90%;
+    border-radius:20px;
+}
+</style>
+
+
+<div id="aizaPage" class="page">
+
+    <!-- HEADER -->
+    <div class="header-app">
+        <button class="gradient-btn" data-back="dashboard">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div style="width:40px;"></div>
     </div>
+
+    <!-- SEARCH -->
+    <div class="search-box">
+        <i class="fas fa-search" style="color:white;"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher...">
+        <button id="searchBtn" class="gradient-btn">OK</button>
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="category-scroll" id="categoryScroll"></div>
+
+    <!-- FORM -->
+    <div class="card">
+        <h3 style="color:white;">📦 Nouvel objet</h3>
+
+        <input type="text" id="objName" placeholder="Nom *">
+        
+        <select id="objCategory">
+            <option>👕 Vêtements</option>
+            <option>🧸 Jouets</option>
+            <option>📎 Bureautique</option>
+            <option>🖥️ Informatique</option>
+        </select>
+
+        <input type="text" id="objSubCategory" placeholder="Sous catégorie">
+        <input type="text" id="objLocation" placeholder="Localisation *">
+        <textarea id="objDescription" placeholder="Description"></textarea>
+
+        <input type="file" id="objPhotos" multiple>
+
+        <button id="saveObjectBtn" class="gradient-btn" style="
+            margin-top:10px;
+            box-shadow:0 0 20px rgba(140,82,255,0.8);
+        ">
+            💾 Enregistrer
+        </button>
+    </div>
+
+    <!-- LISTE -->
+    <div id="objectsList" style="margin-top:20px;"></div>
+
+</div>
+
+
+<script>
+// IMAGE FULLSCREEN
+function showBigImage(src){
+    if(!src) return;
+    const div = document.createElement('div');
+    div.className = "big-preview";
+    div.innerHTML = `<img src="${src}">`;
+    div.onclick = () => div.remove();
+    document.body.appendChild(div);
+}
+
+// RENDER LISTE PRODUITS (3D)
+async function renderObjectsList() {
+    let monthData = await getUserMonthData();
+    let objects = monthData.objects || [];
+
+    let filtered = objects;
+    if(currentSearchTerm){
+        const s = currentSearchTerm.toLowerCase();
+        filtered = objects.filter(o =>
+            o.name.toLowerCase().includes(s) ||
+            (o.description || "").toLowerCase().includes(s)
+        );
+    }
+
+    let container = document.getElementById('objectsList');
+    container.innerHTML = filtered.map(obj => `
+        <div class="object-card" onclick="showBigImage('${obj.photos?.[0] || ''}')">
+            <strong>${obj.name}</strong><br>
+            <small>${obj.subCategory || ''}</small><br>
+            <small>${obj.description || ''}</small>
+        </div>
+    `).join('');
+}
+
+// SEARCH
+document.getElementById('searchBtn').onclick = () => {
+    currentSearchTerm = document.getElementById('searchInput').value;
+    renderObjectsList();
+};
+
+// SAVE OBJECT
+document.getElementById('saveObjectBtn').onclick = async () => {
+    let name = document.getElementById('objName').value.trim();
+    let location = document.getElementById('objLocation').value.trim();
+
+    if(!name || !location) return alert("Nom et localisation requis");
+
+    let monthData = await getUserMonthData();
+    if(!monthData.objects) monthData.objects = [];
+
+    monthData.objects.push({
+        id: Date.now(),
+        name,
+        subCategory: document.getElementById('objSubCategory').value,
+        description: document.getElementById('objDescription').value,
+        photos: []
+    });
+
+    await saveUserMonthData(monthData);
+
+    renderObjectsList();
+};
+</script>
 
     <!-- PROJET -->
     <div id="projetPage" class="page">
