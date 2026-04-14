@@ -68,7 +68,6 @@
         .back-btn-bottom button { background: rgba(255,255,255,0.2); border: none; padding: 10px 20px; border-radius: 40px; color: white; cursor: pointer; transition: all 0.3s; }
         .back-btn-bottom button:hover { background: rgba(255,255,255,0.3); }
         
-        /* MODAL AMÉLIORÉ */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; animation: fadeIn 0.3s ease; }
         .modal.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -91,9 +90,6 @@
         .empty-state { text-align: center; padding: 40px 20px; color: #aaa; }
         .empty-state i { font-size: 60px; margin-bottom: 15px; opacity: 0.3; }
         
-        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: white; animation: spin 1s linear infinite; margin-left: 10px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
         @media (max-width: 500px) { 
             .page { padding: 14px; } 
             .modal-content { max-width: 95%; padding: 20px; }
@@ -109,8 +105,8 @@
         <div class="card" style="margin-top: 40px;">
             <div class="logo" style="text-align: center;">AI.MG</div>
             <h2 style="text-align: center; margin: 20px 0; color:white;">Connexion</h2>
-            <input type="email" id="email" placeholder="Email *" autocomplete="email">
-            <input type="password" id="password" placeholder="Mot de passe *" autocomplete="current-password">
+            <input type="email" id="email" placeholder="Email" autocomplete="email">
+            <input type="password" id="password" placeholder="Mot de passe" autocomplete="current-password">
             <button id="signinBtn" class="gradient-btn" style="width: 100%; margin-bottom: 12px;">Se connecter</button>
             <button id="showRegisterBtn" class="gradient-btn" style="width: 100%; background:linear-gradient(135deg,#3a86ff,#2666cc);">Créer un compte</button>
             <div id="authMessage" style="margin-top: 12px; text-align: center; color:#ffb4a2; font-size: 13px;"></div>
@@ -122,9 +118,9 @@
         <div class="card" style="margin-top: 40px;">
             <div class="logo" style="text-align: center;">AI.MG</div>
             <h2 style="text-align: center; margin: 20px 0; color:white;">Inscription</h2>
-            <input type="email" id="regEmail" placeholder="Email *" autocomplete="email">
-            <input type="password" id="regPassword" placeholder="Mot de passe * (min 6)" autocomplete="new-password">
-            <input type="tel" id="regPhone" placeholder="Téléphone (+261...)">
+            <input type="email" id="regEmail" placeholder="Email" autocomplete="email">
+            <input type="password" id="regPassword" placeholder="Mot de passe (min 6)" autocomplete="new-password">
+            <input type="tel" id="regPhone" placeholder="Téléphone">
             <button id="registerBtn" class="gradient-btn" style="width: 100%; margin-bottom: 12px;">S'inscrire</button>
             <button id="showLoginBtn" class="gradient-btn" style="width: 100%; background:linear-gradient(135deg,#3a86ff,#2666cc);">Retour</button>
             <div id="registerMessage" style="margin-top: 12px; text-align: center; color:#ffb4a2; font-size: 13px;"></div>
@@ -151,7 +147,7 @@
                 <h3 style="color:#eee;">Salaire</h3>
                 <div class="finance-amount" id="salaryDisplay">0 Ar</div>
                 <input type="number" id="monthlySalaryInput" placeholder="Montant" style="margin:8px 0;">
-                <button id="saveSalaryBtn" class="gradient-btn" style="padding:6px; width: 100%;">💾 Enregistrer</button>
+                <button id="saveSalaryBtn" class="gradient-btn" style="padding:6px; width: 100%;">Enregistrer</button>
             </div>
             <div class="finance-card">
                 <i class="fas fa-piggy-bank" style="font-size: 30px; color: #ffd966;"></i>
@@ -217,26 +213,25 @@
             <textarea id="eventDesc" rows="3" placeholder="Description"></textarea>
             <button id="addEventBtn" class="gradient-btn" style="width: 100%;">Ajouter</button>
         </div>
-        <div id="eventListPreview" style="margin-top: 12px;"></div>
     </div>
 
     <!-- PAGE AIZA -->
     <div id="aizaPage" class="page">
         <div class="aiza-container">
             <div style="text-align: center; margin-bottom: 20px;">
-                <h2 style="color: white; font-size: 24px;">📦 Gestion des Objets</h2>
+                <h2 style="color: white; font-size: 24px;">Gestion des Objets</h2>
                 <p style="color: #aaa; font-size: 13px;">Organisez et retrouvez vos objets facilement</p>
             </div>
             
             <div class="search-3d">
-                <input type="text" id="searchInput" placeholder="🔍 Rechercher un objet...">
+                <input type="text" id="searchInput" placeholder="Rechercher un objet">
                 <button id="searchBtn">Rechercher</button>
             </div>
             
             <div class="form-3d">
                 <div class="dropdown-3d" id="categoryDropdown">
                     <div class="dropdown-input">
-                        <span id="selectedCategoryText">📁 Catégorie</span>
+                        <span id="selectedCategoryText">Catégorie</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-menu" id="categoryMenu"></div>
@@ -244,30 +239,30 @@
                 
                 <div class="dropdown-3d" id="subcategoryDropdown">
                     <div class="dropdown-input">
-                        <span id="selectedSubcategoryText">📂 Sous-catégorie</span>
+                        <span id="selectedSubcategoryText">Sous-catégorie</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
                     <div class="dropdown-menu" id="subcategoryMenu"></div>
                 </div>
                 
-                <input type="text" id="objName" placeholder="📝 Nom de l'objet">
-                <input type="text" id="objLocation" placeholder="📍 Localisation (ex: Chambre, Bureau...)">
-                <textarea id="objDescription" rows="3" maxlength="250" placeholder="✍️ Description (optionnelle)"></textarea>
+                <input type="text" id="objName" placeholder="Nom de l'objet">
+                <input type="text" id="objLocation" placeholder="Localisation">
+                <textarea id="objDescription" rows="3" maxlength="250" placeholder="Description"></textarea>
                 
                 <div class="photo-upload">
-                    <span>📸 Photos (max 5)</span>
+                    <span>Photos (max 5)</span>
                     <button type="button" class="plus-btn" id="addPhotoBtn">+</button>
                 </div>
                 <input type="file" id="objPhotos" accept="image/*" multiple style="display: none;">
                 <div id="photoPreview" class="photo-preview"></div>
                 
-                <button id="saveObjectBtn" class="save-btn">💾 Enregistrer l'objet</button>
+                <button id="saveObjectBtn" class="save-btn">Enregistrer</button>
                 
                 <div id="productsListContainer" style="margin-top: 30px;"></div>
             </div>
             
             <div class="back-btn-bottom">
-                <button data-back="dashboard">← Retour au tableau de bord</button>
+                <button data-back="dashboard">Retour</button>
             </div>
         </div>
     </div>
@@ -306,9 +301,8 @@
 </div>
 
 <script>
-    // ==================== CONFIGURATION FIREBASE (CORRIGÉE) ====================
     const firebaseConfig = {
-        apiKey: "AIzaSyBqcigoEE0rRNkzfYvIRUtH2Vu-BBaCbVg",  // ⚠️ CLÉ INCOMPLÈTE - REMPLACEZ PAR LA VRAIE
+        apiKey: "AIzaSyB7z1EVN3jHsBZezDlXTXXq3Vz5QytB7Gk",
         authDomain: "aimg-app.firebaseapp.com",
         projectId: "aimg-app",
         storageBucket: "aimg-app.firebasestorage.app",
@@ -316,20 +310,11 @@
         appId: "1:139623135058:web:407a3a1aabaa5a6780ec8b"
     };
     
-    // Vérification et initialisation Firebase
-    try {
-        firebase.initializeApp(firebaseConfig);
-        console.log("✅ Firebase initialisé avec succès");
-    } catch(e) {
-        console.error("❌ Erreur initialisation Firebase:", e);
-        alert("Erreur de configuration Firebase. Vérifiez votre clé API.");
-    }
-    
+    firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
     
-    // VARIABLES GLOBALES
     let currentUser = null;
     let currentMonth = new Date().getMonth();
     let currentSearchTerm = "";
@@ -337,175 +322,120 @@
     let selectedSubcategory = "";
     let calendar = null;
     
-    // CATÉGORIES ET SOUS-CATÉGORIES
     const categoriesList = ["Vêtements", "Jouets", "Bureautique", "Informatique", "Électronique", "Maison", "Sports", "Autre"];
     const subcategoriesMap = {
-        "Vêtements": ["T-shirts", "Pantalons", "Robes", "Vestes", "Chaussures", "Chaussettes", "Accessoires"],
-        "Jouets": ["Voitures", "Poupées", "Lego", "Peluches", "Ballons", "Jeux de société"],
-        "Bureautique": ["Papier", "Stylos", "Classeurs", "Enveloppes", "Agrafeuse", "Post-it"],
-        "Informatique": ["Clé USB", "Ordinateur", "Souris", "Clavier", "Disque dur", "Câbles"],
-        "Électronique": ["Téléphone", "Tablette", "Écouteurs", "Chargeur", "Batterie", "Caméra"],
-        "Maison": ["Meubles", "Décoration", "Ustensiles", "Linge", "Électroménager"],
-        "Sports": ["Ballon", "Raquette", "Vélo", "Chaussures", "Vêtements", "Équipement"],
-        "Autre": ["Divers", "Non classé"]
+        "Vêtements": ["T-shirts", "Pantalons", "Robes", "Vestes", "Chaussures", "Accessoires"],
+        "Jouets": ["Voitures", "Poupées", "Lego", "Peluches", "Ballons", "Jeux"],
+        "Bureautique": ["Papier", "Stylos", "Classeurs", "Enveloppes", "Agrafeuse"],
+        "Informatique": ["Clé USB", "Ordinateur", "Souris", "Clavier", "Disque dur"],
+        "Électronique": ["Téléphone", "Tablette", "Écouteurs", "Chargeur", "Batterie"],
+        "Maison": ["Meubles", "Décoration", "Ustensiles", "Linge"],
+        "Sports": ["Ballon", "Raquette", "Vélo", "Chaussures"],
+        "Autre": ["Divers"]
     };
     
-    // FONCTION TOAST
-    function showToast(msg, isErr = false) {
+    function showToast(msg, isErr) {
         document.querySelectorAll('.toast').forEach(t => t.remove());
-        
         let t = document.createElement('div');
         t.className = 'toast';
         t.style.background = isErr ? '#d9534f' : 'rgba(0,0,0,0.9)';
         t.textContent = msg;
         document.body.appendChild(t);
-        
         setTimeout(() => t.remove(), 3000);
     }
     
-    // NAVIGATION ENTRE PAGES
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
         document.getElementById(id).classList.add('active-page');
         
         if(id === 'dashboardPage') loadDashboard();
-        if(id === 'aizaPage') { initAiza(); }
+        if(id === 'aizaPage') initAiza();
         if(id === 'facturationPage') loadFacturation();
         if(id === 'calendrierPage') initCalendar();
         if(id === 'projetPage') loadProjects();
     }
     
-    function getMonthKey() { return `2025_${currentMonth}`; }
+    function getMonthKey() { return '2025_' + currentMonth; }
     
-    // ESCAPE HTML
     function escapeHtml(str) { 
         if(!str) return ''; 
-        return String(str).replace(/[&<>"']/g, m => ({
-            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-        })[m]); 
+        return String(str).replace(/[&<>"']/g, function(m) {
+            return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+        }); 
     }
     
-    // ==================== AUTHENTIFICATION ====================
-    
-    // Connexion
     document.getElementById('signinBtn').onclick = async function() {
         let email = document.getElementById('email').value.trim();
         let pwd = document.getElementById('password').value;
         let msgEl = document.getElementById('authMessage');
         
-        console.log("Tentative de connexion avec:", email);
-        
         if(!email || !pwd) {
-            msgEl.textContent = "❌ Email et mot de passe requis";
+            msgEl.textContent = "Email et mot de passe requis";
             return;
         }
         
         this.disabled = true;
         this.textContent = "Connexion...";
-        msgEl.textContent = "⏳ Connexion en cours...";
         
         try {
             await auth.signInWithEmailAndPassword(email, pwd);
-            console.log("✅ Connexion réussie");
-            showToast("✅ Connecté avec succès !");
-            msgEl.textContent = "";
+            showToast("Connecté !");
         } catch(e) { 
-            console.error("❌ Erreur connexion:", e);
-            let errorMsg = "❌ Erreur de connexion";
-            
-            if(e.code === 'auth/user-not-found') errorMsg = "❌ Compte inexistant";
-            else if(e.code === 'auth/wrong-password') errorMsg = "❌ Mot de passe incorrect";
-            else if(e.code === 'auth/invalid-email') errorMsg = "❌ Email invalide";
-            else if(e.code === 'auth/too-many-requests') errorMsg = "❌ Trop de tentatives. Réessayez plus tard";
-            else errorMsg = "❌ " + e.message;
-            
-            msgEl.textContent = errorMsg;
-            showToast(errorMsg, true);
+            msgEl.textContent = e.message;
+            showToast(e.message, true);
         } finally {
             this.disabled = false;
             this.textContent = "Se connecter";
         }
     };
     
-    // Inscription
     document.getElementById('registerBtn').onclick = async function() {
         let email = document.getElementById('regEmail').value.trim();
         let pwd = document.getElementById('regPassword').value;
         let msgEl = document.getElementById('registerMessage');
         
-        console.log("Tentative d'inscription avec:", email);
-        
-        if(!email || !pwd) {
-            msgEl.textContent = "❌ Email et mot de passe requis";
-            return;
-        }
-        
-        if(pwd.length < 6) {
-            msgEl.textContent = "❌ Mot de passe trop court (min 6 caractères)";
+        if(!email || !pwd || pwd.length < 6) {
+            msgEl.textContent = "Email et mot de passe (min 6)";
             return;
         }
         
         this.disabled = true;
         this.textContent = "Inscription...";
-        msgEl.textContent = "⏳ Création du compte...";
         
         try {
             await auth.createUserWithEmailAndPassword(email, pwd);
-            console.log("✅ Inscription réussie");
-            showToast("✅ Compte créé ! Connectez-vous maintenant");
-            msgEl.textContent = "✅ Compte créé avec succès !";
-            
-            setTimeout(() => showPage('loginPage'), 1500);
+            showToast("Compte créé !");
+            setTimeout(() => showPage('loginPage'), 1000);
         } catch(e) { 
-            console.error("❌ Erreur inscription:", e);
-            let errorMsg = "❌ Erreur d'inscription";
-            
-            if(e.code === 'auth/email-already-in-use') errorMsg = "❌ Email déjà utilisé";
-            else if(e.code === 'auth/invalid-email') errorMsg = "❌ Email invalide";
-            else if(e.code === 'auth/weak-password') errorMsg = "❌ Mot de passe trop faible";
-            else errorMsg = "❌ " + e.message;
-            
-            msgEl.textContent = errorMsg;
-            showToast(errorMsg, true);
+            msgEl.textContent = e.message;
+            showToast(e.message, true);
         } finally {
             this.disabled = false;
             this.textContent = "S'inscrire";
         }
     };
     
-    // Déconnexion
+    document.getElementById('showRegisterBtn').onclick = () => showPage('registerPage');
+    document.getElementById('showLoginBtn').onclick = () => showPage('loginPage');
+    
     document.getElementById('logoutBtn').onclick = async () => { 
-        try {
-            await auth.signOut(); 
-            currentUser = null; 
-            showPage('loginPage'); 
-            showToast("👋 Déconnecté");
-        } catch(e) {
-            console.error("Erreur déconnexion:", e);
-            showToast("Erreur de déconnexion", true);
-        }
+        await auth.signOut(); 
+        currentUser = null; 
+        showPage('loginPage'); 
+        showToast("Déconnecté");
     };
     
-    // Observer l'état de connexion
     auth.onAuthStateChanged(async (user) => {
-        console.log("État auth changé:", user ? user.email : "déconnecté");
-        
         if(user) { 
             currentUser = user; 
-            console.log("✅ Utilisateur connecté:", user.uid);
             await loadDashboard(); 
             showPage('dashboardPage'); 
         } else {
-            console.log("❌ Aucun utilisateur connecté");
             currentUser = null;
             showPage('loginPage');
         }
     });
     
-    document.getElementById('showRegisterBtn').onclick = () => showPage('registerPage');
-    document.getElementById('showLoginBtn').onclick = () => showPage('loginPage');
-    
-    // ==================== DASHBOARD ====================
     async function loadDashboard() {
         if(!currentUser) return;
         
@@ -521,15 +451,13 @@
             
             document.getElementById('salaryDisplay').innerHTML = salary.toLocaleString() + ' Ar';
             document.getElementById('savingDisplay').innerHTML = (salary - total).toLocaleString() + ' Ar';
-            document.getElementById('savingDetail').innerHTML = `Salaire: ${salary.toLocaleString()} Ar<br>Dépenses: ${total.toLocaleString()} Ar`;
+            document.getElementById('savingDetail').innerHTML = 'Salaire: ' + salary.toLocaleString() + ' Ar<br>Dépenses: ' + total.toLocaleString() + ' Ar';
             document.getElementById('monthlySalaryInput').value = salary;
         } catch(e) {
-            console.error("Erreur loadDashboard:", e);
-            showToast("Erreur de chargement", true);
+            showToast("Erreur chargement", true);
         }
     }
     
-    // Navigation
     document.querySelectorAll('[data-back]').forEach(btn => {
         btn.onclick = () => showPage('dashboardPage');
     });
@@ -538,27 +466,24 @@
         card.onclick = () => showPage(card.dataset.nav + 'Page');
     });
     
-    // Salaire
     document.getElementById('saveSalaryBtn').addEventListener('click', async () => {
         try {
             let salary = parseFloat(document.getElementById('monthlySalaryInput').value) || 0;
-            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ salary }, { merge: true });
-            showToast("💾 Salaire enregistré");
+            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ salary: salary }, { merge: true });
+            showToast("Salaire enregistré");
             loadDashboard();
         } catch(e) {
-            console.error("Erreur saveSalary:", e);
-            showToast("Erreur d'enregistrement", true);
+            showToast("Erreur", true);
         }
     });
     
-    // ==================== FACTURATION ====================
     const factCats = ["Charges fixes", "Éducation", "Alimentation", "Transport", "Santé", "Shopping", "Imprévus"];
     let activeFactCat = "Charges fixes";
     
     function renderFactCats() {
         let container = document.getElementById('catContainer');
         container.innerHTML = factCats.map(cat => 
-            `<div class="cat-btn ${activeFactCat===cat?'cat-active':''}" data-cat="${cat}">${cat}</div>`
+            '<div class="cat-btn ' + (activeFactCat===cat?'cat-active':'') + '" data-cat="' + cat + '">' + cat + '</div>'
         ).join('');
         
         document.querySelectorAll('.cat-btn').forEach(btn => {
@@ -580,53 +505,46 @@
             let list = expenses[activeFactCat] || [];
             
             document.getElementById('expenseList').innerHTML = list.map((e, i) => 
-                `<div class="expense-item">
-                    <span><strong>${escapeHtml(e.name)}</strong>: ${e.amount.toLocaleString()} Ar</span>
-                    <div>
-                        <button class="editExpense" data-idx="${i}" style="background:none; border:none; cursor:pointer; font-size:18px;">✏️</button>
-                        <button class="delExpense" data-idx="${i}" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
-                    </div>
-                </div>`
+                '<div class="expense-item"><span><strong>' + escapeHtml(e.name) + '</strong>: ' + e.amount.toLocaleString() + ' Ar</span><div><button class="editExpense" data-idx="' + i + '" style="background:none; border:none; cursor:pointer; font-size:18px;">✏️</button><button class="delExpense" data-idx="' + i + '" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button></div></div>'
             ).join('');
             
             let total = 0;
             for(let cat in expenses) {
                 (expenses[cat] || []).forEach(e => total += e.amount);
             }
-            document.getElementById('totalMonthly').innerHTML = `💰 Total mensuel: ${total.toLocaleString()} Ar`;
+            document.getElementById('totalMonthly').innerHTML = 'Total: ' + total.toLocaleString() + ' Ar';
             
             document.querySelectorAll('.editExpense').forEach(btn => {
                 btn.onclick = async () => {
                     let idx = parseInt(btn.dataset.idx);
                     let newName = prompt("Nouveau nom:", list[idx].name);
-                    let newAmount = prompt("Nouveau montant:", list[idx].amount);
+                    let newAmount = prompt("Montant:", list[idx].amount);
                     
                     if(newName && newAmount) {
                         list[idx] = { name: newName, amount: parseFloat(newAmount) };
                         expenses[activeFactCat] = list;
-                        await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ expenses }, { merge: true });
+                        await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ expenses: expenses }, { merge: true });
                         loadFacturation();
                         loadDashboard();
-                        showToast("✅ Dépense modifiée");
+                        showToast("Modifié");
                     }
                 };
             });
             
             document.querySelectorAll('.delExpense').forEach(btn => {
                 btn.onclick = async () => {
-                    if(confirm("Supprimer cette dépense ?")) {
+                    if(confirm("Supprimer ?")) {
                         list.splice(parseInt(btn.dataset.idx), 1);
                         expenses[activeFactCat] = list;
-                        await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ expenses }, { merge: true });
+                        await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ expenses: expenses }, { merge: true });
                         loadFacturation();
                         loadDashboard();
-                        showToast("🗑️ Dépense supprimée");
+                        showToast("Supprimé");
                     }
                 };
             });
         } catch(e) {
-            console.error("Erreur loadFacturation:", e);
-            showToast("Erreur de chargement", true);
+            showToast("Erreur", true);
         }
     }
     
@@ -634,30 +552,28 @@
         let name = document.getElementById('expenseName').value.trim();
         let amount = parseFloat(document.getElementById('expenseAmount').value);
         
-        if(!name || isNaN(amount)) return showToast("Nom et montant valides requis", true);
+        if(!name || isNaN(amount)) return showToast("Nom et montant requis", true);
         
         try {
             let doc = await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).get();
             let expenses = doc.exists ? (doc.data().expenses || {}) : {};
             
             if(!expenses[activeFactCat]) expenses[activeFactCat] = [];
-            expenses[activeFactCat].push({ name, amount });
+            expenses[activeFactCat].push({ name: name, amount: amount });
             
-            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ expenses }, { merge: true });
+            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ expenses: expenses }, { merge: true });
             
             document.getElementById('expenseName').value = '';
             document.getElementById('expenseAmount').value = '';
             
             loadFacturation();
             loadDashboard();
-            showToast("✅ Dépense ajoutée");
+            showToast("Ajouté");
         } catch(e) {
-            console.error("Erreur addExpense:", e);
-            showToast("Erreur d'ajout", true);
+            showToast("Erreur", true);
         }
     });
     
-    // ==================== CALENDRIER ====================
     async function initCalendar() {
         try {
             let doc = await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).get();
@@ -673,9 +589,7 @@
                 locale: 'fr'
             });
             calendar.render();
-        } catch(e) {
-            console.error("Erreur initCalendar:", e);
-        }
+        } catch(e) {}
     }
     
     document.getElementById('addEventBtn').onclick = async () => {
@@ -688,52 +602,45 @@
             let doc = await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).get();
             let events = doc.exists ? (doc.data().events || []) : [];
             
-            events.push({ title, date });
-            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ events }, { merge: true });
+            events.push({ title: title, date: date });
+            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ events: events }, { merge: true });
             
             document.getElementById('eventTitle').value = '';
             document.getElementById('eventDate').value = '';
             
             initCalendar();
-            showToast("✅ Événement ajouté");
+            showToast("Ajouté");
         } catch(e) {
-            console.error("Erreur addEvent:", e);
-            showToast("Erreur d'ajout", true);
+            showToast("Erreur", true);
         }
     };
     
-    // ==================== AIZA ====================
-    
     function initDropdowns() {
         let catMenu = document.getElementById('categoryMenu');
-        catMenu.innerHTML = categoriesList.map(c => 
-            `<div class="dropdown-item" data-value="${c}">📁 ${c}</div>`
-        ).join('');
+        catMenu.innerHTML = categoriesList.map(c => '<div class="dropdown-item" data-value="' + c + '">' + c + '</div>').join('');
         
         catMenu.querySelectorAll('.dropdown-item').forEach(item => {
             item.onclick = () => {
                 selectedCategory = item.dataset.value;
-                document.getElementById('selectedCategoryText').innerHTML = `📁 ${selectedCategory}`;
+                document.getElementById('selectedCategoryText').innerHTML = selectedCategory;
                 document.getElementById('selectedCategoryText').style.color = '#333';
                 document.getElementById('categoryMenu').classList.remove('show');
                 
                 let subMenu = document.getElementById('subcategoryMenu');
                 let subs = subcategoriesMap[selectedCategory] || ["Autre"];
-                subMenu.innerHTML = subs.map(s => 
-                    `<div class="dropdown-item" data-value="${s}">📂 ${s}</div>`
-                ).join('');
+                subMenu.innerHTML = subs.map(s => '<div class="dropdown-item" data-value="' + s + '">' + s + '</div>').join('');
                 
                 subMenu.querySelectorAll('.dropdown-item').forEach(sub => {
                     sub.onclick = () => {
                         selectedSubcategory = sub.dataset.value;
-                        document.getElementById('selectedSubcategoryText').innerHTML = `📂 ${selectedSubcategory}`;
+                        document.getElementById('selectedSubcategoryText').innerHTML = selectedSubcategory;
                         document.getElementById('selectedSubcategoryText').style.color = '#333';
                         document.getElementById('subcategoryMenu').classList.remove('show');
                     };
                 });
                 
                 selectedSubcategory = "";
-                document.getElementById('selectedSubcategoryText').innerHTML = '📂 Sous-catégorie';
+                document.getElementById('selectedSubcategoryText').innerHTML = 'Sous-catégorie';
                 document.getElementById('selectedSubcategoryText').style.color = '#666';
             };
         });
@@ -769,42 +676,30 @@
         try {
             for(let i = 0; i < Math.min(files.length, 5); i++) {
                 let file = files[i];
-                let timestamp = Date.now();
-                let fileName = `${timestamp}_${i}_${file.name}`;
-                let ref = storage.ref().child(`users/${currentUser.uid}/objects/${fileName}`);
+                let fileName = Date.now() + '_' + i + '_' + file.name;
+                let ref = storage.ref().child('users/' + currentUser.uid + '/objects/' + fileName);
                 
-                console.log("Upload photo:", fileName);
                 await ref.put(file);
                 let url = await ref.getDownloadURL();
                 urls.push(url);
-                console.log("Photo uploadée:", url);
             }
         } catch(e) {
-            console.error("Erreur upload photos:", e);
-            showToast("Erreur upload photos: " + e.message, true);
+            showToast("Erreur upload", true);
         }
         
         return urls;
     }
     
     async function loadProducts() {
-        if(!currentUser) {
-            console.log("Pas d'utilisateur connecté");
-            return;
-        }
+        if(!currentUser) return;
         
         try {
-            console.log("Chargement des produits pour:", currentUser.uid, "mois:", getMonthKey());
-            
             let docRef = db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey());
             let doc = await docRef.get();
             
             let objects = [];
             if(doc.exists) {
                 objects = doc.data().objects || [];
-                console.log("Objets trouvés:", objects.length, objects);
-            } else {
-                console.log("Aucun document trouvé");
             }
             
             let filtered = objects;
@@ -816,7 +711,6 @@
                     (o.subCategory || '').toLowerCase().includes(s) || 
                     (o.location || '').toLowerCase().includes(s)
                 );
-                console.log("Objets filtrés:", filtered.length);
             }
             
             let grouped = {};
@@ -826,31 +720,19 @@
                 grouped[cat].push(o); 
             });
             
-            console.log("Groupes:", grouped);
-            
             let html = '';
             
             if(Object.keys(grouped).length === 0) {
-                html = `<div class="empty-state">
-                    <i class="fas fa-box-open"></i>
-                    <p>Aucun objet trouvé</p>
-                    <small style="display:block; margin-top:10px;">Ajoutez votre premier objet ci-dessus</small>
-                </div>`;
+                html = '<div class="empty-state"><i class="fas fa-box-open"></i><p>Aucun objet</p></div>';
             } else {
-                for(let [cat, items] of Object.entries(grouped)) {
-                    html += `<div class="list-title">📁 ${escapeHtml(cat)} (${items.length})</div>`;
+                for(let cat in grouped) {
+                    let items = grouped[cat];
+                    html += '<div class="list-title">' + escapeHtml(cat) + ' (' + items.length + ')</div>';
                     
                     items.forEach((o, idx) => {
-                        let thumb = (o.photos && o.photos.length > 0 && o.photos[0]) ? o.photos[0] : 'https://via.placeholder.com/70/6c3eff/ffffff?text=📦';
+                        let thumb = (o.photos && o.photos.length > 0 && o.photos[0]) ? o.photos[0] : 'https://via.placeholder.com/70/6c3eff/ffffff?text=No';
                         
-                        html += `<div class="product-card" data-index="${idx}">
-                            <img src="${thumb}" alt="${escapeHtml(o.name)}" onerror="this.src='https://via.placeholder.com/70/6c3eff/ffffff?text=📦'">
-                            <div class="product-card-info">
-                                <strong>${escapeHtml(o.name)}</strong>
-                                <small>📂 ${escapeHtml(o.subCategory || 'Non classé')}</small>
-                                <small>📍 ${escapeHtml(o.location)}</small>
-                            </div>
-                        </div>`;
+                        html += '<div class="product-card" data-index="' + idx + '"><img src="' + thumb + '" alt="' + escapeHtml(o.name) + '" onerror="this.src=\'https://via.placeholder.com/70/6c3eff/ffffff?text=Err\'"><div class="product-card-info"><strong>' + escapeHtml(o.name) + '</strong><small>' + escapeHtml(o.subCategory || 'Non classé') + '</small><small>' + escapeHtml(o.location) + '</small></div></div>';
                     });
                 }
             }
@@ -863,8 +745,8 @@
                     let foundObject = null;
                     let count = 0;
                     
-                    for(let [cat, items] of Object.entries(grouped)) {
-                        for(let obj of items) {
+                    for(let cat in grouped) {
+                        for(let obj of grouped[cat]) {
                             if(count === globalIdx) {
                                 foundObject = obj;
                                 break;
@@ -874,49 +756,24 @@
                         if(foundObject) break;
                     }
                     
-                    if(!foundObject) {
-                        console.error("Objet non trouvé");
-                        return;
-                    }
+                    if(!foundObject) return;
                     
                     let modal = document.getElementById('productModal');
-                    let imgSrc = (foundObject.photos && foundObject.photos.length > 0 && foundObject.photos[0]) 
-                        ? foundObject.photos[0] 
-                        : 'https://via.placeholder.com/400/6c3eff/ffffff?text=Aucune+image';
+                    let imgSrc = (foundObject.photos && foundObject.photos.length > 0 && foundObject.photos[0]) ? foundObject.photos[0] : 'https://via.placeholder.com/400';
                     
                     document.getElementById('modalImage').src = imgSrc;
                     document.getElementById('modalImage').onerror = function() {
-                        this.src = 'https://via.placeholder.com/400/d9534f/ffffff?text=Erreur';
+                        this.src = 'https://via.placeholder.com/400';
                     };
                     
-                    document.getElementById('modalDescription').innerHTML = `
-                        <strong>${escapeHtml(foundObject.name)}</strong>
-                        <div style="margin-top: 15px; font-size: 14px;">
-                            <div class="modal-info-line">
-                                <strong>📁 Catégorie:</strong> ${escapeHtml(foundObject.category || 'Non défini')}
-                            </div>
-                            <div class="modal-info-line">
-                                <strong>📂 Sous-catégorie:</strong> ${escapeHtml(foundObject.subCategory || 'Non défini')}
-                            </div>
-                            <div class="modal-info-line">
-                                <strong>📍 Localisation:</strong> ${escapeHtml(foundObject.location)}
-                            </div>
-                            <div class="modal-info-line" style="border:none;">
-                                <strong>📝 Description:</strong><br>
-                                <span style="color:#ccc;">${escapeHtml(foundObject.description || 'Aucune description')}</span>
-                            </div>
-                        </div>
-                    `;
+                    document.getElementById('modalDescription').innerHTML = '<strong>' + escapeHtml(foundObject.name) + '</strong><div style="margin-top: 15px; font-size: 14px;"><div class="modal-info-line"><strong>Catégorie:</strong> ' + escapeHtml(foundObject.category || 'Non défini') + '</div><div class="modal-info-line"><strong>Sous-catégorie:</strong> ' + escapeHtml(foundObject.subCategory || 'Non défini') + '</div><div class="modal-info-line"><strong>Localisation:</strong> ' + escapeHtml(foundObject.location) + '</div><div class="modal-info-line" style="border:none;"><strong>Description:</strong><br><span style="color:#ccc;">' + escapeHtml(foundObject.description || 'Aucune description') + '</span></div></div>';
                     
                     modal.classList.add('active');
                 });
             });
             
-            console.log("Produits affichés avec succès");
-            
         } catch(e) {
-            console.error("Erreur loadProducts:", e);
-            showToast("Erreur de chargement des objets", true);
+            showToast("Erreur chargement", true);
         }
     }
     
@@ -927,9 +784,8 @@
         if(searchBtn) {
             searchBtn.onclick = async () => {
                 currentSearchTerm = searchInput.value.trim();
-                console.log("Recherche:", currentSearchTerm);
                 await loadProducts();
-                showToast(currentSearchTerm ? `🔍 Recherche: "${currentSearchTerm}"` : "📋 Tous les objets affichés");
+                showToast(currentSearchTerm ? 'Recherche: ' + currentSearchTerm : "Tous les objets");
             };
         }
         
@@ -937,21 +793,16 @@
             searchInput.addEventListener('keypress', async (e) => {
                 if(e.key === 'Enter') {
                     currentSearchTerm = searchInput.value.trim();
-                    console.log("Recherche (Enter):", currentSearchTerm);
                     await loadProducts();
-                    showToast(currentSearchTerm ? `🔍 Recherche: "${currentSearchTerm}"` : "📋 Tous les objets affichés");
+                    showToast(currentSearchTerm ? 'Recherche: ' + currentSearchTerm : "Tous les objets");
                 }
             });
         }
     }
     
     async function initAiza() {
-        if(!currentUser) {
-            console.log("initAiza: Pas d'utilisateur connecté");
-            return;
-        }
+        if(!currentUser) return;
         
-        console.log("Initialisation AIZA");
         initDropdowns();
         setupDropdown('categoryDropdown');
         setupDropdown('subcategoryDropdown');
@@ -969,7 +820,7 @@
         let files = Array.from(e.target.files);
         
         if(files.length > 5) {
-            showToast("Maximum 5 photos", true);
+            showToast("Max 5 photos", true);
             files = files.slice(0, 5);
         }
         
@@ -992,36 +843,28 @@
         let photosInput = document.getElementById('objPhotos');
         let photos = photosInput.files;
         
-        console.log("=== DÉBUT ENREGISTREMENT ===");
-        console.log("Nom:", name);
-        console.log("Localisation:", location);
-        console.log("Catégorie:", selectedCategory);
-        console.log("Sous-catégorie:", selectedSubcategory);
-        console.log("Photos:", photos.length);
-        
         if(!name) { 
-            showToast("❌ Nom requis", true); 
+            showToast("Nom requis", true); 
             return; 
         }
         if(!location) { 
-            showToast("❌ Localisation requise", true); 
+            showToast("Localisation requise", true); 
             return; 
         }
         if(!selectedCategory) { 
-            showToast("❌ Catégorie requise", true); 
+            showToast("Catégorie requise", true); 
             return; 
         }
         
         this.disabled = true;
-        this.innerHTML = '⏳ Enregistrement...';
+        this.innerHTML = 'Enregistrement...';
         
         try {
-            showToast("⏳ Upload des photos...");
+            showToast("Upload photos...");
             
             let photoUrls = await uploadPhotos(photos);
-            console.log("Photos uploadées:", photoUrls);
             
-            showToast("💾 Sauvegarde...");
+            showToast("Sauvegarde...");
             
             let docRef = db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey());
             let doc = await docRef.get();
@@ -1029,24 +872,18 @@
             
             let newObject = { 
                 id: Date.now(), 
-                name, 
+                name: name, 
                 category: selectedCategory, 
                 subCategory: selectedSubcategory || "Non classé", 
-                location, 
+                location: location, 
                 description: description || "Aucune description", 
                 photos: photoUrls,
                 createdAt: new Date().toISOString()
             };
             
-            console.log("Nouvel objet:", newObject);
-            
             objects.push(newObject);
             
-            await docRef.set({ objects }, { merge: true });
-            console.log("Objet sauvegardé dans Firestore");
-            
-            let checkDoc = await docRef.get();
-            console.log("Vérification - Objets dans DB:", checkDoc.data()?.objects?.length);
+            await docRef.set({ objects: objects }, { merge: true });
             
             document.getElementById('objName').value = '';
             document.getElementById('objLocation').value = '';
@@ -1055,30 +892,25 @@
             document.getElementById('photoPreview').innerHTML = '';
             selectedCategory = "";
             selectedSubcategory = "";
-            document.getElementById('selectedCategoryText').innerHTML = '📁 Catégorie';
+            document.getElementById('selectedCategoryText').innerHTML = 'Catégorie';
             document.getElementById('selectedCategoryText').style.color = '#666';
-            document.getElementById('selectedSubcategoryText').innerHTML = '📂 Sous-catégorie';
+            document.getElementById('selectedSubcategoryText').innerHTML = 'Sous-catégorie';
             document.getElementById('selectedSubcategoryText').style.color = '#666';
             
             this.disabled = false;
-            this.innerHTML = '💾 Enregistrer l'objet';
+            this.innerHTML = 'Enregistrer';
             
             await loadProducts();
             
-            showToast("✅ Objet sauvegardé avec succès !");
-            
-            console.log("=== FIN ENREGISTREMENT ===");
+            showToast("Objet sauvegardé !");
             
         } catch(e) {
-            console.error("ERREUR COMPLÈTE:", e);
-            showToast("❌ Erreur: " + e.message, true);
-            
+            showToast("Erreur: " + e.message, true);
             this.disabled = false;
-            this.innerHTML = '💾 Enregistrer l'objet';
+            this.innerHTML = 'Enregistrer';
         }
     });
     
-    // ==================== PROJETS ====================
     async function loadProjects() {
         try {
             let doc = await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).get();
@@ -1090,26 +922,17 @@
             let html = '';
             for(let m=0; m<12; m++) {
                 let monthName = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][m];
-                html += `<div style="margin-bottom: 20px;">
-                    <h4 style="color:white; margin-bottom: 10px;">${monthName} (${groups[m].length}/10)</h4>`;
+                html += '<div style="margin-bottom: 20px;"><h4 style="color:white; margin-bottom: 10px;">' + monthName + ' (' + groups[m].length + '/10)</h4>';
                 
                 groups[m].forEach(p => {
-                    html += `<div class="expense-item">
-                        <span><strong>${escapeHtml(p.name)}</strong> - ${p.status}</span>
-                        <div>
-                            <button class="toggleProj" data-id="${p.id}" style="background:none; border:none; cursor:pointer; font-size:18px;">🔄</button>
-                            <button class="delProj" data-id="${p.id}" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
-                        </div>
-                    </div>`;
+                    html += '<div class="expense-item"><span><strong>' + escapeHtml(p.name) + '</strong> - ' + p.status + '</span><div><button class="toggleProj" data-id="' + p.id + '" style="background:none; border:none; cursor:pointer; font-size:18px;">🔄</button><button class="delProj" data-id="' + p.id + '" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button></div></div>';
                 });
                 
-                html += `</div>`;
+                html += '</div>';
             }
             
             document.getElementById('projectsList').innerHTML = html;
-        } catch(e) {
-            console.error("Erreur loadProjects:", e);
-        }
+        } catch(e) {}
     }
     
     document.getElementById('addProjectBtn').addEventListener('click', async () => {
@@ -1124,22 +947,20 @@
             let projects = doc.exists ? (doc.data().projects || []) : [];
             
             if(projects.filter(p => p.month === month).length >= 10) {
-                return showToast("Maximum 10 projets par mois", true);
+                return showToast("Max 10 projets", true);
             }
             
-            projects.push({ id: Date.now(), name, month, status });
-            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ projects }, { merge: true });
+            projects.push({ id: Date.now(), name: name, month: month, status: status });
+            await db.collection('users').doc(currentUser.uid).collection('months').doc(getMonthKey()).set({ projects: projects }, { merge: true });
             
             document.getElementById('projectName').value = '';
             loadProjects();
-            showToast("✅ Projet ajouté");
+            showToast("Ajouté");
         } catch(e) {
-            console.error("Erreur addProject:", e);
-            showToast("Erreur d'ajout", true);
+            showToast("Erreur", true);
         }
     });
     
-    // Modal
     document.querySelector('.close-modal').onclick = () => {
         document.getElementById('productModal').classList.remove('active');
     };
@@ -1171,11 +992,7 @@
     setInterval(() => { 
         let fs = document.getElementById('factMonthSelect'); 
         if(fs && fs.innerHTML === '') { 
-            fs.innerHTML = [...Array(12)].map((_,i)=>
-                `<option value="${i}" ${currentMonth==i?'selected':''}>
-                    ${["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][i]}
-                </option>`
-            ).join(''); 
+            fs.innerHTML = [...Array(12)].map((_,i)=>'<option value="' + i + '" ' + (currentMonth==i?'selected':'') + '>' + ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"][i] + '</option>').join(''); 
             
             fs.onchange = (e) => { 
                 currentMonth = parseInt(e.target.value); 
@@ -1185,8 +1002,6 @@
             }; 
         } 
     }, 500);
-    
-    console.log("✅ Script chargé avec succès");
 </script>
 </body>
 </html>
