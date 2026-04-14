@@ -39,11 +39,9 @@
         .header-app { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { font-weight: 800; font-size: 1.7rem; background: linear-gradient(135deg, #f0e6ff, #c7b9ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
         .search-box { background: white; border-radius: 60px; padding: 8px 16px; display: flex; gap: 8px; margin-bottom: 16px; }
-        .search-box input { margin: 0; padding: 8px; }
+        .search-box input { margin: 0; padding: 8px; flex: 1; }
+        .search-box button { margin: 0; padding: 8px 16px; width: auto; }
         .object-card { background: rgba(255,255,255,0.9); border-radius: 24px; padding: 14px; margin-bottom: 12px; color: #1a1a2e; }
-        .photo-thumb { width: 60px; height: 60px; object-fit: cover; border-radius: 16px; margin: 4px; cursor: pointer; }
-        .suggestion-chip { background: rgba(108,62,255,0.3); border-radius: 40px; padding: 5px 12px; font-size: 0.7rem; cursor: pointer; transition: 0.1s; }
-        .suggestion-chip:active { background: #6c3eff; color:white; }
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: white; padding: 10px 20px; border-radius: 40px; z-index: 1000; animation: fadeOut 3s ease forwards; font-size: 14px; }
         @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
         .category-scroll { display: flex; overflow-x: auto; gap: 10px; padding: 10px 0; margin-bottom: 15px; scrollbar-width: thin; }
@@ -52,13 +50,36 @@
         .category-scroll::-webkit-scrollbar-thumb { background: #6c3eff; border-radius: 10px; }
         .cat-scroll-btn { background: rgba(255,255,255,0.15); border-radius: 40px; padding: 8px 20px; font-size: 0.8rem; white-space: nowrap; cursor: pointer; transition: 0.2s; color: white; }
         .cat-scroll-btn.active { background: linear-gradient(135deg, #a06eff, #6c3eff); }
-        .subcategory-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 200px; overflow-y: auto; padding: 5px; }
+        .subcategory-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 15px; max-height: 150px; overflow-y: auto; padding: 5px; }
         .subcat-btn { background: rgba(255,255,255,0.2); border-radius: 40px; padding: 6px 14px; font-size: 0.7rem; cursor: pointer; transition: 0.2s; color: white; }
         .subcat-btn:active { background: #6c3eff; }
-        .field-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; flex-wrap: wrap; background: rgba(255,255,255,0.15); border-radius: 60px; padding: 8px; }
-        .field-row select, .field-row input { margin: 0; flex: 1; }
-        .field-row .delete-field { background: #d9534f; color: white; border: none; border-radius: 40px; padding: 8px 12px; cursor: pointer; font-size: 12px; }
-        @media (max-width: 500px) { .page { padding: 14px; } .finance-amount { font-size: 1.3rem; } .field-row { flex-direction: column; align-items: stretch; } }
+        .aiza-logo-3d {
+            text-align: center;
+            margin-bottom: 20px;
+            perspective: 500px;
+        }
+        .aiza-logo-3d span {
+            display: inline-block;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f0e6ff, #c7b9ff, #a06eff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 5px 15px rgba(108,62,255,0.4);
+            transform-style: preserve-3d;
+            animation: float3d 3s ease-in-out infinite;
+            letter-spacing: 4px;
+        }
+        @keyframes float3d {
+            0% { transform: translateZ(0px) rotateX(0deg); text-shadow: 0 5px 15px rgba(108,62,255,0.4); }
+            50% { transform: translateZ(15px) rotateX(5deg); text-shadow: 0 15px 25px rgba(108,62,255,0.6); }
+            100% { transform: translateZ(0px) rotateX(0deg); text-shadow: 0 5px 15px rgba(108,62,255,0.4); }
+        }
+        .form-card { margin-bottom: 20px; }
+        .form-card input, .form-card textarea { margin-bottom: 12px; }
+        .result-count { color: white; font-size: 12px; margin-bottom: 10px; }
+        @media (max-width: 500px) { .page { padding: 14px; } .finance-amount { font-size: 1.3rem; } }
     </style>
 </head>
 <body>
@@ -141,11 +162,21 @@
         <div id="eventListPreview" style="margin-top: 12px; max-height: 200px; overflow-y: auto;"></div>
     </div>
 
-    <!-- AIZA (ex-localisation) -->
+    <!-- AIZA (NOUVELLE VERSION) -->
     <div id="aizaPage" class="page">
-        <div class="header-app"><button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button><span class="logo">AIZA</span><div></div></div>
+        <div class="header-app">
+            <button class="gradient-btn" data-back="dashboard"><i class="fas fa-arrow-left"></i> Retour</button>
+            <div class="aiza-logo-3d"><span>AIZA</span></div>
+            <div style="width: 50px;"></div>
+        </div>
+        
         <div class="card">
-            <div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchObjectInput" placeholder="Rechercher un objet..."></div>
+            <!-- Barre de recherche avec bouton -->
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Rechercher par nom, localisation, mot-clé...">
+                <button id="searchBtn" class="gradient-btn" style="padding: 8px 16px; width: auto;">Rechercher</button>
+            </div>
             
             <!-- Catégories avec scroll -->
             <div class="category-scroll" id="categoryScroll"></div>
@@ -153,19 +184,26 @@
             <!-- Sous-catégories -->
             <div id="subcategoryContainer" class="subcategory-grid"></div>
             
-            <!-- Champ pour ajouter un produit personnalisé -->
+            <!-- Champ pour ajouter un nouveau produit -->
             <div style="display: flex; gap: 8px; margin: 10px 0;">
-                <input type="text" id="customProductInput" placeholder="Ajouter un nouveau produit..." style="flex: 2;">
+                <input type="text" id="customProductInput" placeholder="Ajouter un nouveau produit...">
                 <button id="addCustomProductBtn" class="gradient-btn" style="padding: 8px 16px; width: auto;">➕</button>
             </div>
             
-            <input type="text" id="objName" placeholder="Nom de l'objet / lieu (ex: Clés, Sac, Bureau)" style="margin-bottom: 15px;">
+            <!-- Formulaire d'ajout d'objet -->
+            <div class="form-card">
+                <h3 style="color:white; font-size: 16px; margin-bottom: 12px;">📦 Nouvel objet</h3>
+                <input type="text" id="objName" placeholder="Nom de l'objet *">
+                <input type="text" id="objLocation" placeholder="Localisation (où se trouve l'objet) *">
+                <textarea id="objDescription" rows="3" maxlength="250" placeholder="Description de l'objet (max 250 caractères)"></textarea>
+                <div style="font-size: 11px; color: #aaa; text-align: right; margin-top: -8px; margin-bottom: 12px;" id="charCount">0/250</textarea>
+                <input type="text" id="objKeywords" placeholder="Mots-clés (séparés par des virgules)">
+                <button id="saveObjectBtn" class="gradient-btn">💾 Enregistrer l'objet</button>
+            </div>
             
-            <h3 style="color:white; font-size: 14px; margin-bottom: 10px;">📋 Champs personnalisés</h3>
-            <div id="dynamicFieldsContainer"></div>
-            
-            <button id="saveObjectBtn" class="gradient-btn" style="margin-top:12px;">➕ Ajouter un objet / lieu</button>
-            <div id="objectsList" style="margin-top: 20px;"></div>
+            <!-- Résultats de recherche -->
+            <div id="resultsCount" class="result-count"></div>
+            <div id="objectsList"></div>
         </div>
     </div>
 
@@ -213,18 +251,7 @@
     };
     
     let currentCategory = "👕 Vêtements";
-    let customFields = [
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" },
-        { label: "", value: "", valueType: "text" }
-    ];
-    
-    const fieldNameSuggestions = ["Customer", "Lieu", "Couleur", "Marque", "Taille", "Prix", "Date", "Description", "Style", "Modèle"];
+    let currentSearchTerm = "";
     
     function showToast(message, isError = false) {
         const toast = document.createElement('div');
@@ -466,6 +493,24 @@
     }
     
     // ==================== AIZA ====================
+    
+    // Compteur de caractères pour la description
+    function initCharCounter() {
+        const descTextarea = document.getElementById('objDescription');
+        const charCountSpan = document.getElementById('charCount');
+        if(descTextarea && charCountSpan) {
+            descTextarea.addEventListener('input', function() {
+                const remaining = 250 - this.value.length;
+                charCountSpan.innerHTML = `${this.value.length}/250 caractères`;
+                if(this.value.length >= 250) {
+                    charCountSpan.style.color = '#ffb4a2';
+                } else {
+                    charCountSpan.style.color = '#aaa';
+                }
+            });
+        }
+    }
+    
     function renderCategoryScroll() {
         const container = document.getElementById('categoryScroll');
         if(!container) return;
@@ -493,106 +538,65 @@
         });
     }
     
-    function renderDynamicFields() {
-        let container = document.getElementById('dynamicFieldsContainer');
-        if(!container) return;
+    async function renderObjectsList() {
+        let monthData = await getUserMonthData();
+        let objects = monthData.objects || [];
         
-        container.innerHTML = customFields.map((field, idx) => `
-            <div class="field-row" data-idx="${idx}">
-                <select id="fieldName_${idx}" style="flex: 2;" onchange="updateFieldLabel(${idx})">
-                    <option value="">-- Sélectionner --</option>
-                    ${fieldNameSuggestions.map(s => `<option value="${s}" ${field.label === s ? 'selected' : ''}>${s}</option>`).join('')}
-                    <option value="custom">Autre (écrire ci-dessous)</option>
-                </select>
-                <input type="text" id="fieldLabelCustom_${idx}" placeholder="Nom personnalisé" value="${field.label && !fieldNameSuggestions.includes(field.label) ? escapeHtml(field.label) : ''}" style="flex: 2; display: ${field.label && !fieldNameSuggestions.includes(field.label) ? 'block' : 'none'}">
-                <select id="fieldType_${idx}" style="flex: 1;" onchange="updateFieldValueType(${idx})">
-                    <option value="text" ${field.valueType === 'text' ? 'selected' : ''}>Texte</option>
-                    <option value="number" ${field.valueType === 'number' ? 'selected' : ''}>Nombre</option>
-                    <option value="currency" ${field.valueType === 'currency' ? 'selected' : ''}>Montant (Ar)</option>
-                </select>
-                <input type="${field.valueType === 'number' || field.valueType === 'currency' ? 'number' : 'text'}" id="fieldValue_${idx}" placeholder="Valeur" value="${escapeHtml(field.value)}" style="flex: 2;">
-                <button class="delete-field" data-idx="${idx}">🗑️</button>
+        // Filtrer par recherche
+        let filtered = objects;
+        if(currentSearchTerm) {
+            const searchLower = currentSearchTerm.toLowerCase();
+            filtered = objects.filter(obj => {
+                return obj.name.toLowerCase().includes(searchLower) ||
+                       (obj.location && obj.location.toLowerCase().includes(searchLower)) ||
+                       (obj.description && obj.description.toLowerCase().includes(searchLower)) ||
+                       (obj.keywords && obj.keywords.toLowerCase().includes(searchLower));
+            });
+        }
+        
+        const countDiv = document.getElementById('resultsCount');
+        if(countDiv) countDiv.innerHTML = `${filtered.length} objet(s) trouvé(s)`;
+        
+        let container = document.getElementById('objectsList');
+        container.innerHTML = filtered.map(obj => `
+            <div class="object-card">
+                <div><strong>${escapeHtml(obj.name)}</strong></div>
+                <div>📍 ${escapeHtml(obj.location || 'Non spécifié')}</div>
+                <div>📝 ${escapeHtml(obj.description || 'Aucune description')}</div>
+                <div>🏷️ ${escapeHtml(obj.keywords || 'Aucun mot-clé')}</div>
+                <button class="deleteObj" data-id="${obj.id}">🗑️ Supprimer</button>
             </div>
         `).join('');
         
-        document.querySelectorAll('.delete-field').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                let idx = parseInt(btn.dataset.idx);
-                if(customFields.length > 1) {
-                    customFields.splice(idx, 1);
-                    renderDynamicFields();
-                } else {
-                    showToast("Gardez au moins un champ", true);
-                }
-            });
-        });
+        document.querySelectorAll('.deleteObj').forEach(btn => btn.addEventListener('click', async (e) => { 
+            let id = Number(btn.dataset.id); 
+            let monthData = await getUserMonthData(); 
+            monthData.objects = monthData.objects.filter(o=>o.id!==id); 
+            await saveUserMonthData(monthData); 
+            await renderObjectsList(); 
+            showToast("Objet supprimé"); 
+        }));
     }
     
-    window.updateFieldLabel = function(idx) {
-        const select = document.getElementById(`fieldName_${idx}`);
-        const customInput = document.getElementById(`fieldLabelCustom_${idx}`);
-        if(select.value === "custom") {
-            customInput.style.display = "block";
-            customInput.focus();
-        } else {
-            customInput.style.display = "none";
-            customFields[idx].label = select.value;
-        }
-    }
-    
-    window.updateFieldValueType = function(idx) {
-        const typeSelect = document.getElementById(`fieldType_${idx}`);
-        const valueInput = document.getElementById(`fieldValue_${idx}`);
-        customFields[idx].valueType = typeSelect.value;
-        valueInput.type = (typeSelect.value === 'number' || typeSelect.value === 'currency') ? 'number' : 'text';
-    }
-    
-    function collectFieldsFromUI() {
-        for(let i = 0; i < customFields.length; i++) {
-            const select = document.getElementById(`fieldName_${i}`);
-            const customInput = document.getElementById(`fieldLabelCustom_${i}`);
-            const typeSelect = document.getElementById(`fieldType_${i}`);
-            const valueInput = document.getElementById(`fieldValue_${i}`);
-            
-            if(select && select.value === "custom" && customInput) {
-                customFields[i].label = customInput.value;
-            } else if(select && select.value && select.value !== "") {
-                customFields[i].label = select.value;
-            }
-            
-            if(typeSelect) customFields[i].valueType = typeSelect.value;
-            if(valueInput) customFields[i].value = valueInput.value;
-        }
-    }
-    
-    async function renderObjectsList() {
-        let monthData = await getUserMonthData();
-        let searchTerm = document.getElementById('searchObjectInput')?.value.toLowerCase() || "";
-        let filtered = (monthData.objects || []).filter(obj => {
-            let searchText = `${obj.name} ${obj.customFields.map(f=>f.label+":"+f.value).join(' ')}`.toLowerCase();
-            return searchText.includes(searchTerm);
-        });
-        let container = document.getElementById('objectsList');
-        container.innerHTML = filtered.map(obj => `<div class="object-card"><div><strong>${escapeHtml(obj.name)}</strong></div>${obj.customFields.map(f=>`<div>📌 ${escapeHtml(f.label)}: ${escapeHtml(f.value)} (${f.valueType})</div>`).join('')}<button class="deleteObj" data-id="${obj.id}">🗑️ Supprimer</button></div>`).join('');
-        document.querySelectorAll('.deleteObj').forEach(btn => btn.addEventListener('click', async (e) => { let id = Number(btn.dataset.id); let monthData = await getUserMonthData(); monthData.objects = monthData.objects.filter(o=>o.id!==id); await saveUserMonthData(monthData); await renderObjectsList(); showToast("Objet supprimé"); }));
+    async function performSearch() {
+        const searchInput = document.getElementById('searchInput');
+        currentSearchTerm = searchInput ? searchInput.value : '';
+        await renderObjectsList();
+        showToast(`Recherche: "${currentSearchTerm || 'tous les objets'}"`);
     }
     
     async function initAiza() {
         renderCategoryScroll();
         renderSubcategories();
+        initCharCounter();
         
-        customFields = [
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" },
-            { label: "", value: "", valueType: "text" }
-        ];
-        renderDynamicFields();
+        // Bouton recherche
+        const searchBtn = document.getElementById('searchBtn');
+        const searchInput = document.getElementById('searchInput');
+        if(searchBtn) searchBtn.onclick = performSearch;
+        if(searchInput) searchInput.onkeypress = (e) => { if(e.key === 'Enter') performSearch(); };
         
+        // Ajout produit personnalisé
         document.getElementById('addCustomProductBtn').onclick = () => {
             const newProduct = document.getElementById('customProductInput').value.trim();
             if(newProduct) {
@@ -605,36 +609,40 @@
             }
         };
         
+        // Sauvegarde objet
         document.getElementById('saveObjectBtn').onclick = async () => {
             let name = document.getElementById('objName').value.trim();
+            let location = document.getElementById('objLocation').value.trim();
+            let description = document.getElementById('objDescription').value.trim();
+            let keywords = document.getElementById('objKeywords').value.trim();
+            
             if(!name) return showToast("Nom de l'objet requis", true);
-            
-            collectFieldsFromUI();
-            
-            let fields = customFields.filter(f => f.label && f.label.trim() !== "");
-            if(fields.length === 0) return showToast("Ajoutez au moins un champ personnalisé", true);
+            if(!location) return showToast("Localisation requise", true);
             
             let monthData = await getUserMonthData();
             if(!monthData.objects) monthData.objects = [];
-            monthData.objects.push({ id: Date.now(), name, customFields: fields, timestamp: Date.now() });
+            monthData.objects.push({ 
+                id: Date.now(), 
+                name: name, 
+                location: location,
+                description: description,
+                keywords: keywords,
+                timestamp: Date.now() 
+            });
             await saveUserMonthData(monthData);
-            await renderObjectsList();
+            
+            // Réinitialiser formulaire
             document.getElementById('objName').value = '';
-            customFields = [
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" },
-                { label: "", value: "", valueType: "text" }
-            ];
-            renderDynamicFields();
-            showToast("Objet sauvegardé");
+            document.getElementById('objLocation').value = '';
+            document.getElementById('objDescription').value = '';
+            document.getElementById('objKeywords').value = '';
+            if(document.getElementById('charCount')) document.getElementById('charCount').innerHTML = '0/250 caractères';
+            
+            await renderObjectsList();
+            showToast("Objet sauvegardé !");
         };
-        renderObjectsList();
-        document.getElementById('searchObjectInput').addEventListener('input', () => renderObjectsList());
+        
+        await renderObjectsList();
     }
     
     // ==================== PROJETS ====================
